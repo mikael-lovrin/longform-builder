@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Generated output — never commit produced creative or client data
+drafts/
+support/
+tracking/
+*.docx
+*.csv
+*.png
+*.jpg
+*.jpeg
+*.mp4
+image-brief.md
+matrix.md
+gate-report.md
+upload.csv
+
+# Local
+.env
+.DS_Store
+Thumbs.db
+*.log
