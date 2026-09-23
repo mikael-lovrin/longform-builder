@@ -18,10 +18,10 @@ Fixed parameters for this format:
 
 1. `mcp__higgsfield__generate_image` with the prompt from the brief
 2. `mcp__higgsfield__job_status` with `sync: true` until `status: completed`
-3. Download the `rawUrl` **straight to the final filename**, in the cell's folder (`AA BRAND-SKU T101-B1-A/`)
+3. Download the `rawUrl` **straight to the final filename**, in the batch's folder (`AA BRAND-SKU T101-B1/`)
 
 ```bash
-curl -sL "<rawUrl>" -o "AA BRAND-SKU T101-B1-A/AA BRAND-SKU T101-B1-A1.png"
+curl -sL "<rawUrl>" -o "AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1-1.png"
 ```
 
 Never leave it in a temp folder to rename later. The final name is the download name.
@@ -39,10 +39,10 @@ The `plan` mode produces `tracking/image-jobs.json` with one record per image: i
 
 ```bash
 python "$HOME/.claude/skills/longform-builder/scripts/image_batch.py" record \
-    --id B1-A1 --url "<rawUrl>"
+    --id B1-1 --url "<rawUrl>"
 ```
 
-The `record` mode downloads into the cell's folder (creating it if needed), names, validates the dimensions and updates the JSON. At the end:
+The `record` mode downloads into the batch's folder (creating it if needed), names, validates the dimensions and updates the JSON. At the end:
 
 ```bash
 python "$HOME/.claude/skills/longform-builder/scripts/image_batch.py" verify

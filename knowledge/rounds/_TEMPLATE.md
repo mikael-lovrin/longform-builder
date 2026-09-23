@@ -10,7 +10,7 @@
 |---|---|
 | Test | T###, DD/MM/YYYY |
 | Product | <product name> (`BRAND-SKU`) |
-| Matrix | N angles x M levels x K images = **N*M copies, N*M*K images** |
+| Matrix | N angles x M levels x K images = **N*M batches (B1 to B{N*M}), N*M copies, N*M*K images** |
 | Destination | <quiz / PDP / advertorial> — one only |
 | Image variation axis | <ethnicity by default; see `../casting-longform.md`> |
 | Folder | `creatives/T### - DDMM [Long Form Ads]/` |
@@ -35,11 +35,23 @@ Declared differentiator: **<the connection no competitor makes>.** It appears in
 
 ## The N angles
 
-> One block per angle, B1 to B{N}. The angle is a business decision and comes from the user.
+> One block per angle, Angle 1 to Angle N. The angle is a business decision and comes from the user.
 > The **lock** line is the most important one: it is what the gate checks and what keeps two
 > angles from collapsing into each other.
 
-### B{n} — <angle name> (<who it is aimed at>)
+Batch = angle x level (see `../method-batches.md`). Numbering for this round:
+
+| Angle | A — Problem aware | B — Solution aware | C — Hidden cause |
+|---|---|---|---|
+| Angle 1 — <name> | B1 | B2 | B3 |
+| Angle 2 — <name> | B4 | B5 | B6 |
+| Angle 3 — <name> | B7 | B8 | B9 |
+| Angle 4 — <name> | B10 | B11 | B12 |
+| Angle 5 — <name> | B13 | B14 | B15 |
+
+Drafts `drafts/B1.md` to `drafts/B15.md`, folders `AA BRAND-SKU T###-B1/` to `-B15/`, images `AA BRAND-SKU T###-B{n}-1.png` to `-3.png`.
+
+### Angle {n} — <angle name> (<who it is aimed at>)
 - **Reference hook:** <one line, an anchor and not final text>
 - **Target:** <who this reader is, and the frame the copy uses, in two or three lines>
 - **Why:** <the evidence that justifies the angle: account data, a market gap, a documented recommendation>
@@ -102,13 +114,15 @@ Age band locked per angle, never 25-34. See `../casting-longform.md`.
 > Fill from `../method-batches.md`. If the round structure document sets shorter bands than the
 > measured market, put both columns side by side and settle it with the user **before Phase 2**.
 
-| Batch | Target band | Band in the original document |
+| Angle | Target band | Band in the original document |
 |---|---|---|
-| B1 <name> | | |
-| B2 <name> | | |
-| B3 <name> | | |
-| B4 <name> | | |
-| B5 <name> | | |
+| Angle 1 <name> (B1 to B3) | | |
+| Angle 2 <name> (B4 to B6) | | |
+| Angle 3 <name> (B7 to B9) | | |
+| Angle 4 <name> (B10 to B12) | | |
+| Angle 5 <name> (B13 to B15) | | |
+
+The band goes into `tracking/batches.json` as `target_chars` on each of the angle's three batches.
 
 **Decision to confirm with the user before Phase 2.** Raising the band raises the production cost of the whole matrix. Keeping a band below the market makes the round test the angle with pieces at half the length the market runs, which introduces length as an undeclared variable.
 

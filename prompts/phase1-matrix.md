@@ -4,13 +4,23 @@ Goal: write the grid of the round before any copy exists, so every cell is born 
 
 ## Step 1 — Build `matrix.md`
 
-One section per cell. Each cell gets:
+One section per cell. Each cell (angle x level) is a batch, numbered sequentially: `batch = (angle - 1) x 3 + level index + 1`, with A=0, B=1, C=2. A 5 x 3 round has 15 batches:
+
+| | A — Problem aware | B — Solution aware | C — Hidden cause |
+|---|---|---|---|
+| Angle 1 | B1 | B2 | B3 |
+| Angle 2 | B4 | B5 | B6 |
+| Angle 3 | B7 | B8 | B9 |
+| Angle 4 | B10 | B11 | B12 |
+| Angle 5 | B13 | B14 | B15 |
+
+Each cell gets:
 
 ```markdown
-### B{n}-{level} — {Angle Name} x {Level Name}
+### B{batch} — Angle {n} {Angle Name} x {Level Name} ({level})
 
-- **Delivery ID:** {AUTHOR} {BRAND-SKU} T###-B{n}-{level}
-- **Images:** {AUTHOR} {BRAND-SKU} T###-B{n}-{level}1 / 2 / 3
+- **Delivery ID:** {AUTHOR} {BRAND-SKU} T###-B{batch}
+- **Images:** {AUTHOR} {BRAND-SKU} T###-B{batch}-1 / -2 / -3
 - **Reference hook:** (from the structure document, an anchor and not final text)
 - **Target:** who the reader of this cell is, in one sentence
 - **Mechanism position:** late (A) / after the solution failure (B) / in the opening (C)
@@ -41,13 +51,13 @@ LOCK 1 requires three per copy. Distribute them so the matrix does not run the s
 
 Suggested distribution by angle:
 
-| Batch | Natural trio |
+| Angle | Natural trio |
 |---|---|
-| B1 Partner running a protocol | personal experience, third-party validation, demonstration |
-| B2 Dead bedroom, present tense | personal experience, mechanism logic, third-party validation |
-| B3 Male confession | personal experience, mechanism logic, verifiable number |
-| B4 Authority | mechanism logic, verifiable number, demonstration |
-| B5 Single villain | mechanism logic, verifiable number, third-party validation |
+| Angle 1 Partner running a protocol | personal experience, third-party validation, demonstration |
+| Angle 2 Dead bedroom, present tense | personal experience, mechanism logic, third-party validation |
+| Angle 3 Male confession | personal experience, mechanism logic, verifiable number |
+| Angle 4 Authority | mechanism logic, verifiable number, demonstration |
+| Angle 5 Single villain | mechanism logic, verifiable number, third-party validation |
 
 ## Step 4 — `tracking/batches.json`
 
@@ -61,19 +71,22 @@ Suggested distribution by angle:
   "conclusive_floor_conversions": 10,
   "batches": [
     {
-      "id": "B1-A",
+      "id": "B1",
+      "angle_num": 1,
       "angle": "Partner running a protocol",
       "level": "A",
       "mechanism_position": "late",
       "proof": ["personal_experience", "third_party_validation", "demonstration"],
       "voices": ["andre-chaperon", "blair-warren"],
       "target_chars": [8000, 12000],
-      "images": ["B1-A1", "B1-A2", "B1-A3"],
+      "images": ["B1-1", "B1-2", "B1-3"],
       "status": "planned"
     }
   ]
 }
 ```
+
+One record per batch, `B1` to `B15`. `target_chars` is **per batch id**: it is what `check_locks.py` reads for each draft `drafts/B{n}.md` (without the json it falls back to 8,000 to 12,000). The three batches of the same angle normally repeat the same band.
 
 `status` moves through: `planned` -> `written` -> `gate_passed` -> `images_ok` -> `delivered` -> `live` -> `winner` or `dead`.
 

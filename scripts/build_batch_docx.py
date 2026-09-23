@@ -2,12 +2,15 @@
 """
 build_batch_docx.py — Phase 6.
 
+Batch = angle x awareness level, numbered B1..B15 in a 5x3 round
+(B1 = angle 1 level A, B2 = angle 1 level B, B4 = angle 2 level A). Images: B1-1, B1-2, B1-3.
+
 (1) Builds two .docx per batch, in the house document standard:
     Arial 12pt, 1.5 line spacing, black, headings in ALL CAPS and bold.
-      AA BRAND-SKU T###-B1-A/AA BRAND-SKU T###-B1-A.docx   only the copy (primary text +
-                                                          first 3 lines), in the cell folder
-                                                          next to the 3 images
-      infos/AA BRAND-SKU T###-B1-A INFOS.docx   angle, awareness level and the 3 image prompts
+      AA BRAND-SKU T###-B1/AA BRAND-SKU T###-B1.docx   only the copy (primary text +
+                                                      first 3 lines), in the batch folder
+                                                      next to the 3 images
+      infos/AA BRAND-SKU T###-B1 INFOS.docx   angle, awareness level and the 3 image prompts
 (2) Builds the round upload sheet (upload.csv), one row per ad, already carrying
     the classification columns that creative-intel will read afterwards.
     Headline, description and CTA live only in this sheet, never in a docx.
@@ -17,7 +20,7 @@ prompt that generated each image.
 Awareness levels (default): A Problem aware, B Solution aware, C Hidden cause.
 
 Usage:
-    python build_batch_docx.py --draft drafts/B1-A.md   (writes to AA BRAND-SKU T101-B1-A/)
+    python build_batch_docx.py --draft drafts/B1.md   (writes to AA BRAND-SKU T101-B1/)
     python build_batch_docx.py --folder drafts/ --test T101 --product BRAND-SKU   # all of them
     python build_batch_docx.py --sheet --folder drafts/ --test T101 --product BRAND-SKU \
            --destination "https://..." --campaign "T101 Long Form" --out upload.csv
@@ -83,7 +86,7 @@ def read_brief(cell, path="image-brief.md"):
         scene = ms.group(1).strip()
     labels = {}
     # '.' does not match newlines without DOTALL, so this only takes the header line
-    pat_lab = r"^####.*?" + re.escape(cell) + r"(\d)(.*)$"
+    pat_lab = r"^####.*?\b" + re.escape(cell) + r"-(\d)\b(.*)$"
     for ml in re.finditer(pat_lab, block, re.M):
         labels[ml.group(1)] = ml.group(2).strip().lstrip("-" + chr(8212) + chr(8211) + " ").strip()
     return {"scene": scene, "labels": labels}
@@ -95,18 +98,23 @@ def read_prompts(cell, path="image-brief.md"):
         return {}
     txt = p.read_text(encoding="utf-8")
     out = {}
-    pat = r"^####[^\n]*\b" + re.escape(cell) + r"(\d)\b[^\n]*\n(.*?)(?=^#{3,4}\s|\Z)"
+    pat = r"^####[^\n]*\b" + re.escape(cell) + r"-(\d)\b[^\n]*\n(.*?)(?=^#{3,4}\s|\Z)"
     for m in re.finditer(pat, txt, re.M | re.S):
         pm = re.search(r"\*\*Prompt:?\*\*\s*\n(.*)", m.group(2), re.S)
         out[m.group(1)] = (pm.group(1) if pm else m.group(2)).strip()
     return out
 
 def cell_path(author, product, test, cell):
-    """Each cell has its own folder holding the copy docx and the 3 images:
-    AA BRAND-SKU T101-B1-A/AA BRAND-SKU T101-B1-A.docx"""
+    """Each batch has its own folder holding the copy docx and the 3 images:
+    AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1.docx (batch = angle x level, B1..B15)"""
     name = "%s %s %s-%s" % (author, product, test, cell)
     Path(name).mkdir(exist_ok=True)
     return str(Path(name) / (name + ".docx"))
+
+def batch_order(p):
+    """B2 before B10: sort by batch number, not alphabetically."""
+    m = re.match(r"B(\d+)$", Path(p).stem)
+    return (0, int(m.group(1))) if m else (1, Path(p).stem)
 
 # ------------------------------------------------------------------ docx
 def _run(run, size=12, bold=False):
@@ -174,9 +182,10 @@ def build_docx(md_path, out_path, brief="image-brief.md", infos_dir="infos"):
                      "FIRST 3 LINES")
     angle_txt = section(body, "ANGLE")
     base = Path(out_path).stem
-    mcell = re.search(r"(B\d)-([ABC])", base)
-    cell = mcell.group(0) if mcell else ""
-    level = mcell.group(2) if mcell else str(fm.get("level", ""))
+    # batch = angle x level, numbered B1..B15; the level comes from the frontmatter
+    mcell = re.search(r"-(B\d+)$", base)
+    cell = mcell.group(1) if mcell else ""
+    level = str(fm.get("level", ""))
 
     # document 1: literally only the copy. It is the file that goes to whoever
     # uploads the ad, so no title, angle, avatars, headline, description or CTA.
@@ -204,7 +213,7 @@ def build_docx(md_path, out_path, brief="image-brief.md", infos_dir="infos"):
         lead_text(info, "Locked scene. ", b["scene"])
     for k in ("1", "2", "3"):
         lead_text(info, "Image %s, %s. " % (k, labels.get(k) or ETHNICITY[k]),
-                  "File %s%s.png" % (base, k))
+                  "File %s-%s.png" % (base, k))
         body_text(info, prompts.get(k, ""), justify=False)
     # INFOS lives outside the cell folder, which only holds the copy docx and the 3 images
     folder = Path(infos_dir)
@@ -215,13 +224,14 @@ def build_docx(md_path, out_path, brief="image-brief.md", infos_dir="infos"):
 # ------------------------------------------------------------------ sheet
 def build_sheet(folder, test, product, destination, campaign, out, author=DEFAULT_AUTHOR):
     rows = []
-    for md in sorted(Path(folder).glob("*.md")):
+    for md in sorted(Path(folder).glob("*.md"), key=batch_order):
         fm, body = parse_front(md.read_text(encoding="utf-8"))
-        m = re.search(r"B(\d)-([ABC])", md.stem)
+        m = re.match(r"B(\d+)$", md.stem)
         if not m:
             continue
-        b, level = m.group(1), m.group(2)
-        base = "%s %s %s-B%s-%s" % (author, product, test, b, level)
+        b, level = m.group(1), str(fm.get("level", ""))
+        base = "%s %s %s-B%s" % (author, product, test, b)
+        labels = (read_brief("B%s" % b) or {}).get("labels", {})
         primary = section(body, "PRIMARY TEXT")
         head = section(body, "LINK HEADLINE")
         desc = section(body, "LINK DESCRIPTION")
@@ -229,18 +239,19 @@ def build_sheet(folder, test, product, destination, campaign, out, author=DEFAUL
         for v in ("1", "2", "3"):
             rows.append({
                 "campaign": campaign or "%s Long Form" % test,
-                "ad_set": "%s-B%s-%s" % (test, b, level),
-                "ad": "%s%s" % (base, v),
-                "image": "%s%s.png" % (base, v),
+                "ad_set": "%s-B%s" % (test, b),
+                "ad": "%s-%s" % (base, v),
+                "image": "%s-%s.png" % (base, v),
                 "primary_text": primary,
                 "headline": head,
                 "description": desc,
                 "cta": cta,
                 "destination": destination or "",
-                "angle": fm.get("angle", "B%s" % b),
-                "level": level,
+                "angle": fm.get("angle", ""),
+                "angle_num": fm.get("angle_num", ""),
+                "level": "%s (%s)" % (LEVELS.get(level, level), level),
                 "variation": v,
-                "ethnicity": ETHNICITY[v],
+                "cluster": labels.get(v) or ETHNICITY[v],
                 "chars": len(primary),
             })
     if not rows:
@@ -271,11 +282,10 @@ def main():
         out, n = build_docx(a.draft, out, a.brief)
         print("built: %s  (%d chars of copy)" % (out, n)); return
     if a.folder:
-        for md in sorted(Path(a.folder).glob("*.md")):
-            m = re.search(r"B(\d)-([ABC])", md.stem)
-            if not m:
+        for md in sorted(Path(a.folder).glob("*.md"), key=batch_order):
+            if not re.match(r"B\d+$", md.stem):
                 continue
-            out = cell_path(a.author, a.product, a.test, "B%s-%s" % (m.group(1), m.group(2)))
+            out = cell_path(a.author, a.product, a.test, md.stem)
             _, n = build_docx(md, out, a.brief)
             print("built: %s  (%d chars)" % (out, n))
         return

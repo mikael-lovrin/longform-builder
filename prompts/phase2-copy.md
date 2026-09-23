@@ -17,15 +17,16 @@ Also read at least **two real examples** from `support/` or from the round's exa
 
 ## Writing order
 
-Write **by angle, not by level**: B1-A, B1-B, B1-C, then B2-A... That way the three columns of the same angle are born differentiated on purpose, with the same material fresh in your head.
+Write **by angle, not by level**: B1, B2, B3 (Angle 1 at levels A, B and C), then B4, B5, B6 (Angle 2), and so on up to B15. Since the numbering already follows the angle, writing in numeric order is writing by angle. That way the three columns of the same angle are born differentiated on purpose, with the same material fresh in your head.
 
 ## Draft format
 
-One file per cell in `drafts/`, named `B{n}-{level}.md`:
+One file per batch in `drafts/`, named `B{batch}.md` (`B1.md` to `B15.md`). Angle and level are not in the filename: they live in the frontmatter, in `angle_num:` and `level:`.
 
 ```markdown
 ---
-id: AA BRAND-SKU T101-B1-A
+id: AA BRAND-SKU T101-B1
+angle_num: 1
 angle: Partner running a protocol
 level: A
 mechanism_position: late

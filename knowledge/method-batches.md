@@ -8,13 +8,27 @@
 
 **1 batch = 1 angle + 1 awareness level + 1 long-form copy + K image variations.**
 
+**Batch = angle x level.** Each combination is its own batch, numbered sequentially: a round of 5 angles x 3 levels has **15 batches, B1 to B15**. An angle on its own is not a batch: angles are called **Angle 1 to Angle 5**.
+
+Formula: `batch = (angle - 1) x 3 + level index + 1`, with A=0, B=1, C=2.
+
+| | A — Problem aware | B — Solution aware | C — Hidden cause |
+|---|---|---|---|
+| Angle 1 | B1 | B2 | B3 |
+| Angle 2 | B4 | B5 | B6 |
+| Angle 3 | B7 | B8 | B9 |
+| Angle 4 | B10 | B11 | B12 |
+| Angle 5 | B13 | B14 | B15 |
+
+Image variations come after a hyphen: `B1-1`, `B1-2`, `B1-3`. The hyphen is not optional, because without it `B11` would be ambiguous. Full names: folder `AA BRAND-SKU T101-B1/`, docx `AA BRAND-SKU T101-B1.docx`, images `AA BRAND-SKU T101-B1-1.png`. The level (A/B/C) and the angle number live in the draft frontmatter (`level:`, `angle_num:`), not in the name.
+
 - The copy is the **same** across the K variations. Only the image changes.
 - In long form static, **the hook is the image**. Its job is to stop the scroll and earn the tap on see more. The copy carries the angle.
 - The K images are K avatar clusters, to find out who responds.
 
 ## The matrix
 
-`N angles x M awareness levels = N*M cells`. Each cell is a batch.
+`N angles x M awareness levels = N*M cells`. Each cell is a batch, numbered B1 to B(N*M) angle by angle, levels A, B, C inside each angle.
 
 When there is more than one copywriter, **they all write the entire matrix**. You do not split cells between copywriters: writing the full matrix is what gives you multiple executions per cell and lets you separate "good angle" from "good copywriter".
 
@@ -72,12 +86,12 @@ The next round takes the winners and only then tests destination, product format
 
 - **$100 per batch** (per ad set), distributed automatically across the K images
 - **Reading floor: $850.85 per cell** for a directional read, **10 conversions** for a conclusive read. Before that, no conclusions
-- Cut order if cash tightens: first the column with prior negative evidence, then the lowest-CTR batches inside each angle. **Never cut an execution** (copywriter)
+- Cut order if cash tightens: first the column with prior negative evidence (a whole level, e.g. column B = B2, B5, B8, B11, B14), then the lowest-CTR batches inside each angle. **Never cut an execution** (copywriter)
 - The winner scales in the **same ad set**, from $100 to about $300
 
 ## How to read the result
 
-The matrix lets you read four things: by angle (the rows), by level (the columns), by cell (the winning combination) and by avatar (the K images of each batch).
+The matrix lets you read four things: by angle (the rows, e.g. Angle 1 = B1+B2+B3), by level (the columns, e.g. level A = B1+B4+B7+B10+B13), by batch (the winning combination) and by avatar (the K images of each batch).
 
 **Two mandatory corrections, both learned from mistakes already made on this account:**
 

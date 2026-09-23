@@ -4,11 +4,12 @@ Three artifacts: two `.docx` per batch (the copy and the infos) and one upload s
 
 ## The two `.docx` per batch
 
-One pair per cell, **not per image** — the copy is the same across the three variations.
+One pair per batch (angle x level, B1 to B15), **not per image** — the copy is the same across the three variations.
 
 ```
-AA BRAND-SKU T101-B1-A/AA BRAND-SKU T101-B1-A.docx   <- copy only, in the cell folder next to the 3 images
-infos/AA BRAND-SKU T101-B1-A INFOS.docx              <- angle, level and the prompts of the 3 images
+AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1.docx   <- copy only, in the batch folder next to the 3 images
+AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1-1.png  <- and -2.png, -3.png
+infos/AA BRAND-SKU T101-B1 INFOS.docx            <- angle, level and the prompts of the 3 images
 ```
 
 The source `.md` files stay in `drafts/`, references in `support/`.
@@ -19,7 +20,9 @@ Arial 12pt, 1.5 line spacing, black, headings in ALL CAPS and bold, margins 3-3-
 
 ```bash
 python "$HOME/.claude/skills/longform-builder/scripts/build_batch_docx.py" \
-    --draft drafts/B1-A.md          # writes to AA BRAND-SKU T101-B1-A/
+    --draft drafts/B1.md            # writes to AA BRAND-SKU T101-B1/
+python "$HOME/.claude/skills/longform-builder/scripts/build_batch_docx.py" \
+    --folder drafts/                # all of them, B1 to B15
 ```
 
 ### The copy document
@@ -45,17 +48,19 @@ In this order:
 | Column | Content |
 |---|---|
 | `campaign` | name of the test campaign |
-| `ad_set` | one per batch (the ad set is what receives the $100) |
-| `ad` | `AA BRAND-SKU T101-B1-A1` |
-| `image` | filename |
+| `ad_set` | one per batch (the ad set is what receives the $100): `T101-B1` |
+| `ad` | `AA BRAND-SKU T101-B1-1` |
+| `image` | filename: `AA BRAND-SKU T101-B1-1.png` |
 | `primary_text` | the long-form copy |
 | `headline` | link headline |
 | `description` | link description |
 | `cta` | button |
 | `destination` | destination URL |
-| `angle` / `level` / `variation` / `ethnicity` | the dimensions, for the later read |
+| `angle` / `angle_num` / `level` / `variation` / `cluster` | the dimensions, for the later read. `level` carries the label, `Problem aware (A)`, read from the draft frontmatter; `cluster` is the variation label from `image-brief.md` |
 
-The last four columns exist so `creative-intel` can read the round without rebuilding the classification. **That is what closes the loop**: the round is born already classified.
+Rows come out in numeric batch order (B1, B2, ... B10, not B1, B10, B2).
+
+The dimension columns exist so `creative-intel` can read the round without rebuilding the classification. **That is what closes the loop**: the round is born already classified.
 
 ```bash
 python "$HOME/.claude/skills/longform-builder/scripts/build_batch_docx.py" \

@@ -27,27 +27,27 @@ On top of that, spreading across pages isolates risk: one restriction does not t
 
 **The page has to match the angle's POV.** Running a dead-bedroom copy narrated by a wife off a men's health authority page breaks congruence and kills the read.
 
-| Batch | Copy POV | Page type |
+| Angle | Copy POV | Page type |
 |---|---|---|
-| B1 Partner running a protocol | female | person, woman |
-| B2 Dead bedroom, present tense | female | person, woman |
-| B3 Male confession | male | person, man |
-| B4 Authority | authority | men's health / education |
-| B5 Single villain | neutral / explanatory | men's health / education |
+| Angle 1 Partner running a protocol | female | person, woman |
+| Angle 2 Dead bedroom, present tense | female | person, woman |
+| Angle 3 Male confession | male | person, man |
+| Angle 4 Authority | authority | men's health / education |
+| Angle 5 Single villain | neutral / explanatory | men's health / education |
 
 ## Recommended profile archetypes
 
 Pick a name for each persona and keep it consistent across the round. Names go in the copy unmarked, per the placeholder policy in the round file.
 
-### Person pages, female voice (B1 and B2)
+### Person pages, female voice (Angles 1 and 2)
 
 **1. The confessional wife.**
 Woman, 49, married 22 years, two teenagers, lives in the suburbs. Works part time in school administration. Communication: confessional, writes like someone venting in a group chat and then regretting it a little. Uses specific domestic detail (the time on the stove clock, the brand of coffee). Never speaks as an expert: she learned it from another woman. She is the Silent Protocol persona.
 
 **2. The blunt nurse.**
-Woman, 46, married 18 years, shift nurse. Communication: more direct and rawer than the first one, a little acid humor, no euphemisms about sex. She is the one who can carry the most explicit column without sounding vulgar, because that is already her register. Good for B2, where the pain is in the present.
+Woman, 46, married 18 years, shift nurse. Communication: more direct and rawer than the first one, a little acid humor, no euphemisms about sex. She is the one who can carry the most explicit column without sounding vulgar, because that is already her register. Good for Angle 2, where the pain is in the present.
 
-### Person pages, male voice (B3)
+### Person pages, male voice (Angle 3)
 
 **3. The plain-spoken tradesman.**
 Man, 54, divorced, works in construction or logistics. Communication: dry, short, admits the shame without dramatizing it. Sentences under ten words. He is the opposite of a coach: he is not teaching anything, he is telling you what happened. Good for the confession.
@@ -55,22 +55,22 @@ Man, 54, divorced, works in construction or logistics. Communication: dry, short
 **4. The recent retiree.**
 Man, 58, married, recently retired. Communication: reflective, slightly longer, the tone of someone who has already processed it. Serves as a register variation for the same angle, for when the first male voice saturates.
 
-### Authority (B4) — contracted physician
+### Authority (Angle 4) — contracted physician
 
 **5. The physician's own page.**
-**The doctor is contracted and real**: the brand contracts the professional who signs and publishes the copy, so the angle runs as genuine personal-authority proof, in the first person and in a professional capacity. That is what unlocks B4, which is the proof modality the account never used across 199 ads.
+**The doctor is contracted and real**: the brand contracts the professional who signs and publishes the copy, so the angle runs as genuine personal-authority proof, in the first person and in a professional capacity. That is what unlocks Angle 4, which is the proof modality the account never used across 199 ads.
 
 Communication: didactic and direct, no jargon. Explains plumbing, not biochemistry. Admits what conventional medicine does not solve without attacking colleagues. The credential appears in the first line and is never mentioned again.
 
 **Name in the copies:** write the physician's name as the final name, unmarked. See the placeholder policy in the round file.
 
-### Education and mechanism (B5)
+### Education and mechanism (Angle 5)
 
 **6. The editorial mechanism page.**
-Faceless editorial page. Communication: explanatory, mechanism first, plumbing language. Publishes about blood flow, cortisol and male aging. The natural home for B5.
+Faceless editorial page. Communication: explanatory, mechanism first, plumbing language. Publishes about blood flow, cortisol and male aging. The natural home for Angle 5.
 
 **7. The popular men's health page.**
-Men's health page with a more popular register, closer to gym vocabulary. A second home for B5 and for single-villain tests.
+Men's health page with a more popular register, closer to gym vocabulary. A second home for Angle 5 and for single-villain tests.
 
 ### Reserve
 

@@ -16,9 +16,31 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-# Per-round defaults. The real bands live in the round file; override them there.
-DEFAULT_LENGTH_RANGES = {"B1": (4000, 6000), "B2": (4000, 6000), "B3": (4500, 7000),
-                         "B4": (6000, 11000), "B5": (3500, 5500)}
+# Fallback bands. The source of truth is tracking/batches.json (field target_chars, keyed
+# by batch id B1..B15), which comes from the round file. These only apply without that json.
+# Batch = angle x awareness level, numbered B1..B15 in a 5x3 round.
+DEFAULT_LENGTH_RANGES = {}           # without batches.json, GENERIC_RANGE applies to every batch
+GENERIC_RANGE = (8000, 12000)
+
+def load_ranges(folder):
+    """Reads target_chars from tracking/batches.json, walking up to 2 levels from the folder."""
+    base = Path(folder).resolve()
+    for cand in (base, base.parent, base.parent.parent):
+        j = cand / "tracking" / "batches.json"
+        if j.exists():
+            try:
+                d = json.loads(j.read_text(encoding="utf-8"))
+                out = {}
+                for b in d.get("batches", []):
+                    target = b.get("target_chars") or b.get("chars_target")
+                    bid = str(b.get("id", ""))
+                    if target and len(target) == 2 and bid:
+                        out[bid] = (int(target[0]), int(target[1]))
+                if out:
+                    return out, str(j)
+            except Exception:
+                pass
+    return dict(DEFAULT_LENGTH_RANGES), "built-in fallback"
 
 TRICK = re.compile(r"\b(trick|secret|hack|loophole)\b", re.I)
 ENEMIES = {
@@ -54,7 +76,7 @@ def section(body, title):
     n = re.search(r"^##\s+", rest, re.M)
     return (rest[:n.start()] if n else rest).strip()
 
-def check(path, product):
+def check(path, product, ranges=None):
     txt = path.read_text(encoding="utf-8")
     fm, body = parse_front(txt)
     primary = section(body, "PRIMARY TEXT") or body
@@ -65,7 +87,8 @@ def check(path, product):
     cta = section(body, "CTA")
 
     bid = fm.get("id") or path.stem
-    batch = re.search(r"B(\d)", path.stem)
+    # batch = angle x level (B1..B15); the length band is per batch id in batches.json
+    batch = re.search(r"B(\d+)", path.stem)
     batch = "B%s" % batch.group(1) if batch else None
     n = len(primary)
     flat = strip_accents(primary.lower())
@@ -131,7 +154,7 @@ def check(path, product):
         pend.append("LOCK 12 FIRST 3 LINES section missing")
 
     # length
-    band = DEFAULT_LENGTH_RANGES.get(batch)
+    band = (ranges or DEFAULT_LENGTH_RANGES).get(batch, GENERIC_RANGE)
     if band:
         if band[0] <= n <= band[1]:
             ok.append("length")
@@ -168,15 +191,20 @@ def main():
     ap.add_argument("--json")
     a = ap.parse_args()
 
-    files = sorted(Path(a.folder).glob("*.md"))
+    def batch_order(p):
+        m = re.match(r"B(\d+)$", p.stem)
+        return (0, int(m.group(1))) if m else (1, p.stem)
+    files = sorted(Path(a.folder).glob("*.md"), key=batch_order)
     if not files:
         print("No .md found in %s" % a.folder); sys.exit(2)
 
-    res = [check(p, a.product) for p in files]
+    ranges, origin = load_ranges(a.folder)
+    res = [check(p, a.product, ranges) for p in files]
     nb = sum(1 for r in res if r["blocks"])
     npd = sum(len(r["open_items"]) for r in res)
 
     print("=" * 78)
+    print("length bands: %s" % origin)
     print("LOCK GATE  |  %d batches  |  %d blocked  |  %d open items"
           % (len(res), nb, npd))
     print("=" * 78)

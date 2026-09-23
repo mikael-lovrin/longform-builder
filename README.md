@@ -8,7 +8,7 @@
 
 ---
 
-> **The one-sentence version.** Long Form Builder turns a round of advertising tests into a controlled experiment: one angle per batch, one awareness level per column, one variable in the image, and a set of hard rules derived from classifying 199 live ads so that nobody on the team has to argue about tone again.
+> **The one-sentence version.** Long Form Builder turns a round of advertising tests into a controlled experiment: one angle per row, one awareness level per column, one batch per angle × level cell, one variable in the image, and a set of hard rules derived from classifying 199 live ads so that nobody on the team has to argue about tone again.
 
 ---
 
@@ -112,8 +112,8 @@ A second correction came from the same analysis and is equally counterintuitive:
                                    │
         ┌──────────────────────────▼──────────────────────────┐
         │                     THE MATRIX                      │
-        │      N angles  ×  M awareness levels  =  cells      │
-        │      each cell = 1 batch = 1 copy + K images        │
+        │   N angles  ×  M levels  =  N×M batches (B1..B15)   │
+        │   each batch = 1 angle × 1 level = 1 copy + K imgs  │
         └──────────────────────────┬──────────────────────────┘
                                    │
      ┌─────────────┬───────────────┼───────────────┬─────────────┐
@@ -153,7 +153,7 @@ Angles are a business decision and come from the operator each round. They are n
 | 2 | **Copy** | one `.md` per batch | length band per angle |
 | 3 | **Quality gate** | `gate-report.md` | **blocking** — see below |
 | 4 | **Hook and image brief** | `image-brief.md` | hook concepts qualified first |
-| 5 | **Generation** | named PNGs, in each cell's folder | 1:1 verified, scene replicated |
+| 5 | **Generation** | named PNGs, in each batch's folder | 1:1 verified, scene replicated |
 | 6 | **Delivery** | two `.docx` per batch (copy + INFOS) + upload sheet | five placement fields present |
 
 ### Phase 3 is not optional
@@ -250,7 +250,7 @@ python scripts/check_locks.py drafts/ --product "PRODUCT NAME"
 ### `build_batch_docx.py`
 Builds the two delivery documents per batch and the upload sheet for the round.
 
-- **Copy document**, saved in the cell's folder next to its three images: literally only the copy, the primary text followed by the first three lines. No title, angle, headline or CTA; it is the file that goes to whoever uploads the ad.
+- **Copy document**, saved in the batch's folder next to its three images: literally only the copy, the primary text followed by the first three lines. No title, angle, headline or CTA; it is the file that goes to whoever uploads the ad.
 - **INFOS document**, saved in `infos/` at the test root: angle, awareness level label, and the locked scene plus the full prompt of each image, read from `image-brief.md`.
 
 Headline, description and CTA live only in the upload sheet.
@@ -270,7 +270,7 @@ Orchestrates image generation. Because image-model calls happen through a tool i
 ```bash
 python scripts/image_batch.py plan --brief image-brief.md --test T101 --product BRAND-SKU
 python scripts/image_batch.py next          # prints the next prompt, ready to paste
-python scripts/image_batch.py record --id B1-A1 --url "<result url>"
+python scripts/image_batch.py record --id B1-1 --url "<result url>"
 python scripts/image_batch.py verify        # count, aspect ratio, file size, naming
 ```
 
@@ -303,13 +303,13 @@ Phase 0 will ask for what it cannot infer: test code, product, matrix shape, des
 
 ```
 05-Creatives/T### - DDMM [Long Form Ads]/
-├── AA BRAND-SKU T###-B1-A/          ← one folder per cell (batch × level)
-│   ├── AA BRAND-SKU T###-B1-A.docx   ← copy only
-│   ├── AA BRAND-SKU T###-B1-A1.png   ← the 3 image variations
-│   ├── AA BRAND-SKU T###-B1-A2.png
-│   └── AA BRAND-SKU T###-B1-A3.png
-├── AA BRAND-SKU T###-B1-B/ ...       ← 5 batches × 3 levels = 15 folders
-├── infos/AA BRAND-SKU T###-B1-A INFOS.docx ← angle, level, image prompts
+├── AA BRAND-SKU T###-B1/            ← one folder per batch (angle × level)
+│   ├── AA BRAND-SKU T###-B1.docx     ← copy only
+│   ├── AA BRAND-SKU T###-B1-1.png    ← the 3 image variations
+│   ├── AA BRAND-SKU T###-B1-2.png
+│   └── AA BRAND-SKU T###-B1-3.png
+├── AA BRAND-SKU T###-B2/ ... B15/    ← 5 angles × 3 levels = 15 batches, 15 folders
+├── infos/AA BRAND-SKU T###-B1 INFOS.docx ← angle, level, image prompts
 ├── matrix.md
 ├── image-brief.md
 ├── gate-report.md
@@ -319,7 +319,7 @@ Phase 0 will ask for what it cannot infer: test code, product, matrix shape, des
 └── tracking/batches.json
 ```
 
-Each cell folder holds exactly four files: the copy docx and the three images.
+Each batch folder holds exactly four files: the copy docx and the three images. A batch is one angle × level cell, numbered B1 to B15 in a 5 × 3 round (B1 = Angle 1 level A, B2 = Angle 1 level B, B4 = Angle 2 level A); the image variation follows a hyphen, `B1-1`, so that `B11` is never ambiguous.
 
 Every batch ships five fields or it does not ship: primary text, image, link headline, link description, CTA.
 
@@ -365,7 +365,7 @@ You may share this. You may not sell it, run it as a paid service, or publish a 
 
 ---
 
-> **A versão de uma frase.** O Long Form Builder transforma uma rodada de teste de anúncio num experimento controlado: um ângulo por batch, um nível de consciência por coluna, uma variável na imagem, e um conjunto de regras duras tiradas da classificação de 199 anúncios veiculados, para que ninguém no time precise discutir tom de novo.
+> **A versão de uma frase.** O Long Form Builder transforma uma rodada de teste de anúncio num experimento controlado: um ângulo por linha, um nível de consciência por coluna, um batch por célula ângulo × nível, uma variável na imagem, e um conjunto de regras duras tiradas da classificação de 199 anúncios veiculados, para que ninguém no time precise discutir tom de novo.
 
 ## Por que isso existe
 
@@ -424,10 +424,10 @@ E uma segunda correção, igualmente contraintuitiva:
 | 2 | **Copy** | um `.md` por batch | faixa de comprimento por ângulo |
 | 3 | **Quality gate** | `gate-report.md` | **bloqueante** |
 | 4 | **Hook e briefing de imagem** | `image-brief.md` | conceito de hook qualificado antes |
-| 5 | **Geração** | PNGs nomeados, na pasta de cada célula | 1:1 verificado, cena replicada |
+| 5 | **Geração** | PNGs nomeados, na pasta de cada batch | 1:1 verificado, cena replicada |
 | 6 | **Entrega** | dois `.docx` por batch (copy + INFOS) + planilha | cinco campos de placement |
 
-Cada célula (batch × nível) tem pasta própria com exatamente quatro arquivos: o `.docx` só com a copy (texto principal e as três primeiras linhas) e as três imagens. Num round de 5 batches × 3 níveis são 15 pastas. O `.docx` INFOS de cada célula (ângulo, nível de consciência e o prompt completo de cada imagem) fica em `infos/`, na raiz do teste. Headline, descrição e CTA não entram em nenhum docx: vivem só na planilha de subida.
+Cada batch (a combinação ângulo × nível) tem pasta própria com exatamente quatro arquivos: o `.docx` só com a copy (texto principal e as três primeiras linhas) e as três imagens. Num round de 5 ângulos × 3 níveis são 15 batches, numerados B1 a B15 (B1 = Ângulo 1 nível A, B2 = Ângulo 1 nível B, B4 = Ângulo 2 nível A), e 15 pastas: `AA BRAND-SKU T101-B1/` com `AA BRAND-SKU T101-B1.docx` e as imagens `AA BRAND-SKU T101-B1-1.png` a `-3.png`. O `.docx` INFOS de cada batch (ângulo, nível de consciência e o prompt completo de cada imagem) fica em `infos/`, na raiz do teste. Headline, descrição e CTA não entram em nenhum docx: vivem só na planilha de subida.
 
 ### A fase 3 não é opcional
 

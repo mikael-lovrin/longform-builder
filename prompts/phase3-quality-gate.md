@@ -30,9 +30,9 @@ Run the squad's `checklists/output-quality.md` (COPY-M-CL-001). The CRITICAL ite
 
 ## Part 3 — The checks only a human read catches
 
-**1. Opening swap test.** Take the first 3 lines of the 3 cells of the same angle. If they could be swapped between cells without anyone noticing, the columns are not differentiated. The whole row fails.
+**1. Opening swap test.** Take the first 3 lines of the 3 cells of the same angle (e.g. B1, B2 and B3 for Angle 1). If they could be swapped between cells without anyone noticing, the columns are not differentiated. The whole row fails.
 
-**2. Angle swap test.** Take the 5 cells of the same level. If two of them could trade angle names without a single rewrite, one of those two angles does not actually exist.
+**2. Angle swap test.** Take the 5 cells of the same level (e.g. level A = B1, B4, B7, B10, B13). If two of them could trade angle names without a single rewrite, one of those two angles does not actually exist.
 
 **3. Mobile paragraph test.** No block longer than 4 lines in the first 1,500 characters.
 
@@ -55,7 +55,7 @@ Run on: YYYY-MM-DD | 15 batches
 | Batch | Item | Note |
 
 ## Approved with no reservation
-B1-A, B1-C, ...
+B1, B3, B4, ...
 
 ## Read of the set
 - Are the 3 columns differentiated?

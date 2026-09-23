@@ -20,13 +20,13 @@ Do not mix more than three voices in one batch. Past that it becomes a patchwork
 
 The angle slots below are the archetypes this format keeps hitting. Map your round's angles onto them.
 
-| Batch | Base voice | Why | Support voice |
+| Angle | Base voice | Why | Support voice |
 |---|---|---|---|
-| **B1** Partner running a protocol (female POV) | `andre-chaperon` | Soap opera sequence: a 30-day diary is a chained emotional sequence, and he is the specialist at making the reader come back for the next block | `blair-warren` (lifting the guilt) |
-| **B2** Dead bedroom, present tense (female POV) | `gary-halbert` | Emotional storytelling lead in the present tense of the pain, with no redemption arc. Classic territory for him | `joanna-wiebe` (voice of customer, keeps the copy from sounding written) |
-| **B3** Male confession | `john-carlton` | Casual long form, first-person male, bar register instead of stage register. Witnessed humiliation has to sound said, not drafted | `gary-halbert` (the slow descent) |
-| **B4** Authority (physician) | `parris-lampropoulos` | Health long form with a credential, the biggest ones in the market. Holds 11,000 characters without losing the reader | `gary-bencivenga` (credibility and proof) |
-| **B5** Single villain | `eugene-schwartz` | Mechanism as news, eight symptoms consolidated into one villain. It is literally the mechanic of Breakthrough Advertising | `clayton-makepeace` (villain and emotion in health) |
+| **Angle 1** Partner running a protocol (female POV) | `andre-chaperon` | Soap opera sequence: a 30-day diary is a chained emotional sequence, and he is the specialist at making the reader come back for the next block | `blair-warren` (lifting the guilt) |
+| **Angle 2** Dead bedroom, present tense (female POV) | `gary-halbert` | Emotional storytelling lead in the present tense of the pain, with no redemption arc. Classic territory for him | `joanna-wiebe` (voice of customer, keeps the copy from sounding written) |
+| **Angle 3** Male confession | `john-carlton` | Casual long form, first-person male, bar register instead of stage register. Witnessed humiliation has to sound said, not drafted | `gary-halbert` (the slow descent) |
+| **Angle 4** Authority (physician) | `parris-lampropoulos` | Health long form with a credential, the biggest ones in the market. Holds 11,000 characters without losing the reader | `gary-bencivenga` (credibility and proof) |
+| **Angle 5** Single villain | `eugene-schwartz` | Mechanism as news, eight symptoms consolidated into one villain. It is literally the mechanic of Breakthrough Advertising | `clayton-makepeace` (villain and emotion in health) |
 
 ## Voice by block (see `longform-anatomy.md`)
 
