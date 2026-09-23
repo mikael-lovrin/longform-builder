@@ -81,3 +81,11 @@ Inherited from the house static image psychology guidelines, with one adjustment
 12. Aspect ratio 1:1
 
 **The relevant difference from `ads-builder`:** there is no lettering here. In short creative the embedded text is part of the hook; in long form static it competes with the copy and cuts the piece's organic reach.
+
+## Pose: avoid a twisted torso with a bracing hand
+
+Learned in a previous round. A pose with the body turned to one side, the head looking back over the shoulder and a hand braced on something (a door frame, a wall, a table) comes out with an arm crossing the body or a hand that belongs to no one. Write the pose as three-quarters to the camera, the bracing hand on the SAME side as the support, the other arm loose, and close the Action with an `Anatomy:` line (two arms, two hands, five fingers, no arm crossing the body, no extra limb).
+
+## Image tone: do not mirror the pain of the copy
+
+A previous round shipped with every image in a register of still pain (quiet shame, low light, washed-out palette) and the whole set came out depressing. The top competitor's library does the opposite: **an image of pleasure or promise with fear-driven copy**. The contrast between the two is what makes the piece aggressive. When writing the brief, choose the image's tone on purpose, not as a reflex of the copy's wound.

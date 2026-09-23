@@ -50,8 +50,8 @@ When a batch wins, what scales is **that copy with that image**. Never hand off 
 | 2 — Long-form copy | Always | `prompts/phase2-copy.md` | one `.md` per batch in `drafts/` |
 | 3 — Quality gate | Always, before any approval | `prompts/phase3-quality-gate.md` | `gate-report.md` |
 | 4 — Visual hook and image brief | Always | `prompts/phase4-hook-and-image.md` | `image-brief.md` (K prompts per batch) |
-| 5 — Image generation | After 4 is approved | `prompts/phase5-generation.md` | named PNGs in the test root |
-| 6 — Delivery | Always last | `prompts/phase6-delivery.md` | one `.docx` per batch + `upload.csv` |
+| 5 — Image generation | After 4 is approved | `prompts/phase5-generation.md` | named PNGs in each cell's folder |
+| 6 — Delivery | Always last | `prompts/phase6-delivery.md` | 2 `.docx` per batch (copy + INFOS) + `upload.csv` |
 
 Read the phase file **at the moment you execute it**.
 
@@ -106,10 +106,10 @@ Docx  : {AUTHOR} {BRAND-SKU} T###-B{batch}-{level}.docx
 - `{BRAND-SKU}` — brand and product code, e.g. `BRAND-SKU`
 - `T###` — the test
 - `B{n}` — the batch, which is the angle (B1 to B5)
-- `{level}` — A, B or C (awareness level)
+- `{level}` — A (Problem aware), B (Solution aware) or C (Hidden cause)
 - `{variation}` — 1, 2 or 3 (avatar cluster of the image)
 
-The `.docx` carries no variation because **the copy is the same across the three images**. One copy, three images, one document.
+The `.docx` carries no variation because **the copy is the same across the three images**. One copy, three images, one copy document (plus its INFOS document in `infos/`).
 
 Confirm only the test code (`T###`) with the user the first time. The rest is derived.
 
@@ -121,8 +121,13 @@ Everything inside the test folder, inside the product:
 
 ```
 creatives/T### - DDMM [Long Form Ads]/
-├── AA BRAND-SKU T###-B1-A.docx      <- delivery (root)
-├── AA BRAND-SKU T###-B1-A1.png      <- images (root)
+├── AA BRAND-SKU T###-B1-A/          <- one folder per cell (batch x level)
+│   ├── AA BRAND-SKU T###-B1-A.docx   <- copy only
+│   ├── AA BRAND-SKU T###-B1-A1.png   <- the 3 image variations
+│   ├── AA BRAND-SKU T###-B1-A2.png
+│   └── AA BRAND-SKU T###-B1-A3.png
+├── AA BRAND-SKU T###-B1-B/ ...       <- 5 batches x 3 levels = 15 folders
+├── infos/AA BRAND-SKU T###-B1-A INFOS.docx <- angle, level and the prompts of the 3 images
 ├── matrix.md
 ├── image-brief.md
 ├── gate-report.md
@@ -131,6 +136,8 @@ creatives/T### - DDMM [Long Form Ads]/
 ├── support/                         <- references, swipe, raw prompts
 └── tracking/batches.json
 ```
+
+**One folder per cell:** every batch and level combination has its own folder holding exactly 4 files, the copy docx and the 3 images. The scripts already write there. A round of 5 batches x 3 levels makes 15 folders.
 
 Never leave an image in a temp folder and never leave a source `.md` loose in the root. This follows the house output naming convention (the short-form ads skill, section 7).
 

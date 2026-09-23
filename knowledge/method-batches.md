@@ -22,11 +22,13 @@ When there is more than one copywriter, **they all write the entire matrix**. Yo
 
 The horizontal axis tends to repeat, because the question it answers is structural.
 
-**A — Entry through the scene.** Opens on a dated, concrete scene of a lived consequence, never on the clinical symptom and never on the problem in the abstract. The specificity is implicit proof before any argument. The pain is named by its social consequence, the cause stays open, and the mechanism arrives later, as absolution.
+**Default labels (fixed):** A = Problem aware, B = Solution aware, C = Hidden cause. These are the names that appear in the documents and in conversation.
+
+**A — Problem aware.** Enters through the scene. Opens on a dated, concrete scene of a lived consequence, never on the clinical symptom and never on the problem in the abstract. The specificity is implicit proof before any argument. The pain is named by its social consequence, the cause stays open, and the mechanism arrives later, as absolution.
 
 **B — Solution aware.** Opens on why everything he already tried failed.
 
-**C — Mechanism at the door.** Opens straight on the reveal. **A and C are the same classified level**; the difference is the **position of the mechanism**: in A it arrives late, as relief; in C it opens the copy, as news. The real question this axis answers is: **does the mechanism sell better early or late?**
+**C — Hidden cause.** The mechanism comes first. Opens straight on the reveal. **A and C are the same classified level**; the difference is the **position of the mechanism**: in A it arrives late, as relief; in C it opens the copy, as news. The real question this axis answers is: **does the mechanism sell better early or late?**
 
 In column C the order of the movements in `longform-anatomy.md` **inverts**: mechanism first, pain as confirmation. It is not the same text with a paragraph moved.
 

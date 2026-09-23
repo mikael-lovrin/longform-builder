@@ -48,7 +48,9 @@ def cmd_plan(a):
         var = cid[-1]            # 1
         jobs.append({
             "id": cid, "cell": cell, "variation": var, "ethnicity": ETHNICITY.get(var, "?"),
-            "file": "%s %s %s-%s.png" % (a.author, a.product, a.test, cid),
+            # each cell has its own folder: 'AA BRAND-SKU T101-B1-A/AA BRAND-SKU T101-B1-A1.png'
+            "file": "%s %s %s-%s/%s %s %s-%s.png" % (a.author, a.product, a.test, cell,
+                                                    a.author, a.product, a.test, cid),
             "prompt": prompt, "status": "pending", "url": None, "bytes": 0, "dim": None,
         })
     if not jobs:
@@ -91,6 +93,7 @@ def cmd_record(a):
     if not j:
         print("id %s is not in the queue" % a.id); sys.exit(2)
     dest = Path(j["file"])
+    dest.parent.mkdir(parents=True, exist_ok=True)
     try:
         req = urllib.request.Request(a.url, headers=UA)
         data = urllib.request.urlopen(req, timeout=300).read()
