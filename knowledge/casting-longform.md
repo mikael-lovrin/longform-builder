@@ -89,3 +89,17 @@ Learned in a previous round. A pose with the body turned to one side, the head l
 ## Image tone: do not mirror the pain of the copy
 
 A previous round shipped with every image in a register of still pain (quiet shame, low light, washed-out palette) and the whole set came out depressing. The top competitor's library does the opposite: **an image of pleasure or promise with fear-driven copy**. The contrast between the two is what makes the piece aggressive. When writing the brief, choose the image's tone on purpose, not as a reflex of the copy's wound.
+
+## Natural POV (learned in production)
+
+When there is no avatar in the frame, the image is shot from the narrator's eyes. Three forms read as a real photo:
+
+1. **One hand only**, entering from the edge of the frame, because the other hand holds the phone
+2. **An empty room, no hand at all**, shot at eye height from the doorway
+3. **The hand resting on the body** (knee, thigh), not posed on the object
+
+What reads as artificial and gets regenerated: both arms entering from the top of the frame (strange anatomy), and a hand placed on the object like a product shot. In the empty-room form the skin and age cues leave the frame, so use it only when the cell's variable does not depend on the image.
+
+## Doctors: casting follows the real doctor
+
+In the authority angle the page and the copy belong to a **contracted, real** doctor. The doctor's image does not vary ethnicity: it follows how the real doctor looks. The cell's ethnicity variable moves to the other images (the patient, the couple). Whenever a real photo of the doctor exists, it replaces the generated image before the ad runs, because the model does not keep the same face across images.

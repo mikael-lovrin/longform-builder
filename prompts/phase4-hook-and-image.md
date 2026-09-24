@@ -55,20 +55,20 @@ Read `knowledge/casting-longform.md` before writing the prompts. It supersedes t
 **Passed Momentum+Virality:** yes
 **Locked scene:** woman alone, kitchen, 1:47 a.m., warm light off the stove, mug in both hands, looking out of frame.
 
-#### B1-v1 — woman 45-52 · white
+#### B1-V1 — woman 45-52 · white
 **Prompt:**
 (full prompt, 12 items)
 
-#### B1-v2 — woman 53-60 · Black
+#### B1-V2 — woman 53-60 · Black
 **Prompt:**
 (identical, changing only the subject description)
 
-#### B1-v3 — couple 45-60 · Latino
+#### B1-V3 — couple 45-60 · Latino
 **Prompt:**
 (same)
 ```
 
-The batch header is `### B{batch} — {Angle} x {Level}` and each variation header is `#### B{batch}-{variation} — {label}`. The hyphen before the variation is mandatory (`B11-v1`, never `B111`), and the scripts parse exactly this pattern. The batch must be at `###` and the variation at `####`: with `##` the last variation swallows the next batch.
+The batch header is `### B{batch} — {Angle} x {Level}` and each variation header is `#### B{batch}-{variation} — {label}`. The hyphen before the variation is mandatory (`B11-V1`, never `B111`), and the scripts parse exactly this pattern. The batch must be at `###` and the variation at `####`: with `##` the last variation swallows the next batch.
 
 ## Mandatory check on every prompt
 
@@ -80,6 +80,8 @@ The batch header is `### B{batch} — {Angle} x {Level}` and each variation head
 - [ ] Declared what is NOT in the frame: no product, no logo, no split, **no embedded text**
 - [ ] Aspect ratio 1:1
 - [ ] Emotional tone declared in one sentence
+- [ ] No avatar in the frame: natural POV (one hand from the edge, empty room, or hand resting on the body; never both arms from the top, never a hand posed on the object). See `knowledge/casting-longform.md`
+- [ ] Doctor image: casting follows the real contracted doctor, not the cell's ethnicity variable
 
 **No lettering in this format.** In short creative the embedded text is part of the hook; here it competes with the copy of the post and cuts reach.
 

@@ -62,5 +62,5 @@ Destination: [quiz/PDP]
 Language: [en/pt]
 Last phase: Phase 0 — Onboarding
 Next phase: Phase 1 — Matrix
-Naming: {AUTHOR} {BRAND-SKU} T###-B{batch}-{variation}  (batch = angle x level, B1..B[N*M]; e.g. T101-B1-v1)
+Naming: {AUTHOR} {BRAND-SKU} T###-TF-B{batch}-{variation}  (batch = angle x level, B1..B[N*M]; e.g. T101-TF-B1-V1)
 ```

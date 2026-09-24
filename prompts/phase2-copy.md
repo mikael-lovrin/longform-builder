@@ -25,7 +25,7 @@ One file per batch in `drafts/`, named `B{batch}.md` (`B1.md` to `B15.md`). Angl
 
 ```markdown
 ---
-id: AA BRAND-SKU T101-B1
+id: AA BRAND-SKU T101-TF-B1
 angle_num: 1
 angle: Partner running a protocol
 level: A
@@ -33,6 +33,9 @@ mechanism_position: late
 voices: [andre-chaperon, blair-warren, cialdini]
 proof: [personal_experience, third_party_validation, demonstration]
 chars: 0
+funnel: TF
+profile: {page name exactly as on Meta}
+angle_summary: {the angle in one sentence}
 ---
 
 ## PRIMARY TEXT

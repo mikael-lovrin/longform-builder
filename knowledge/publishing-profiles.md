@@ -23,6 +23,10 @@ First-person long form static **does not work coming off the brand page**. A sup
 
 On top of that, spreading across pages isolates risk: one restriction does not take down the whole round.
 
+## Every batch names its page
+
+Each draft declares the page in its frontmatter (`profile:`), spelled **exactly as the page is named on Meta** (punctuation included). The name comes out in the main document (PROFILE field) and in the `profile` column of `upload.csv`, so whoever uploads the ad never has to guess which page runs it. Keep a list of the pages that actually exist in the round file, and do not assign a page that has not been created yet.
+
 ## The congruence rule
 
 **The page has to match the angle's POV.** Running a dead-bedroom copy narrated by a wife off a men's health authority page breaks congruence and kills the read.

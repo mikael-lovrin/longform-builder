@@ -19,8 +19,8 @@ Each cell gets:
 ```markdown
 ### B{batch} — Angle {n} {Angle Name} x {Level Name} ({level})
 
-- **Delivery ID:** {AUTHOR} {BRAND-SKU} T###-B{batch}
-- **Images:** {AUTHOR} {BRAND-SKU} T###-B{batch}-v1 / -2 / -3
+- **Delivery ID:** {AUTHOR} {BRAND-SKU} T###-TF-B{batch}
+- **Images:** {AUTHOR} {BRAND-SKU} T###-TF-B{batch}-V1 / -2 / -3
 - **Reference hook:** (from the structure document, an anchor and not final text)
 - **Target:** who the reader of this cell is, in one sentence
 - **Mechanism position:** late (A) / after the solution failure (B) / in the opening (C)
@@ -79,7 +79,7 @@ Suggested distribution by angle:
       "proof": ["personal_experience", "third_party_validation", "demonstration"],
       "voices": ["andre-chaperon", "blair-warren"],
       "target_chars": [8000, 12000],
-      "images": ["B1-v1", "B1-v2", "B1-v3"],
+      "images": ["B1-V1", "B1-V2", "B1-V3"],
       "status": "planned"
     }
   ]

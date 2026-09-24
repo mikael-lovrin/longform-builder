@@ -51,7 +51,7 @@ When a batch wins, what scales is **that copy with that image**. Never hand off 
 | 3 — Quality gate | Always, before any approval | `prompts/phase3-quality-gate.md` | `gate-report.md` |
 | 4 — Visual hook and image brief | Always | `prompts/phase4-hook-and-image.md` | `image-brief.md` (K prompts per batch) |
 | 5 — Image generation | After 4 is approved | `prompts/phase5-generation.md` | named PNGs in each batch's folder |
-| 6 — Delivery | Always last | `prompts/phase6-delivery.md` | 2 `.docx` per batch (copy + INFOS) + `upload.csv` |
+| 6 — Delivery | Always last | `prompts/phase6-delivery.md` | 2 `.docx` per batch (main + PROMPTS) + `upload.csv` |
 
 Read the phase file **at the moment you execute it**.
 
@@ -98,23 +98,24 @@ And there is a sixth piece, which is not part of the ad but decides whether it w
 ## Naming — fixed standard
 
 ```
-Folder : {AUTHOR} {BRAND-SKU} T###-B{batch}/
-Docx   : {AUTHOR} {BRAND-SKU} T###-B{batch}.docx
-Image  : {AUTHOR} {BRAND-SKU} T###-B{batch}-v{variation}.png
-INFOS  : infos/{AUTHOR} {BRAND-SKU} T###-B{batch} INFOS.docx
+Folder  : {AUTHOR} {BRAND-SKU} T###-{FUNNEL}-B{batch}/
+Docx    : {AUTHOR} {BRAND-SKU} T###-{FUNNEL}-B{batch}.docx
+Prompts : {AUTHOR} {BRAND-SKU} T###-{FUNNEL}-B{batch} - PROMPTS.docx
+Image   : {AUTHOR} {BRAND-SKU} T###-{FUNNEL}-B{batch}-V{variation}.png
 ```
 
 - `{AUTHOR}` — the writer's initials, two letters
 - `{BRAND-SKU}` — brand and product code, e.g. `BRAND-SKU`
 - `T###` — the test
+- `{FUNNEL}` — `TF` (top of funnel) or `FF` (bottom of funnel). It ties the ad name to its funnel stage so tracking can cross performance by stage. The scripts take `--funnel TF|FF`
 - `B{batch}` — the batch, which is the **angle x awareness level combination**, numbered sequentially. In a 5-angle x 3-level round there are **15 batches, B1 to B15**: B1 = Angle 1 level A, B2 = Angle 1 level B, B3 = Angle 1 level C, B4 = Angle 2 level A, ... B15 = Angle 5 level C. Formula: `batch = (angle - 1) x 3 + level index + 1` (A=0, B=1, C=2)
-- `{variation}` — 1, 2 or 3 (avatar cluster of the image), **always after a hyphen**: `T101-B1-v1`. Without the hyphen `B11` would be ambiguous (batch 11, or batch 1 variation 1)
+- `V{variation}` — V1, V2 or V3 (the image variation), **always after a hyphen and with a capital V**: `T101-TF-B1-V1`. Without the hyphen `B11` would be ambiguous (batch 11, or batch 1 variation 1)
 
 Angles are called **Angle 1 to Angle 5**, never B1 to B5. The level stays a letter (A = Problem aware, B = Solution aware, C = Hidden cause) and lives in the draft frontmatter (`level:`), next to `angle_num:`. It is not part of the filename.
 
-Full example: `AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1.docx` and the images `AA BRAND-SKU T101-B1-v1.png`, `-v2.png`, `-v3.png`. In the upload sheet, `ad_set` = `T101-B1` and `ad` = `AA BRAND-SKU T101-B1-v1`.
+Full example: `AA BRAND-SKU T101-TF-B1/AA BRAND-SKU T101-TF-B1.docx`, `AA BRAND-SKU T101-TF-B1 - PROMPTS.docx` and the images `AA BRAND-SKU T101-TF-B1-V1.png`, `-V2.png`, `-V3.png`. In the upload sheet, `ad_set` = `T101-TF-B1` and `ad` = `AA BRAND-SKU T101-TF-B1-V1`. Separators are always hyphens, never dots.
 
-The `.docx` carries no variation because **the copy is the same across the three images**. One copy, three images, one copy document (plus its INFOS document in `infos/`).
+The `.docx` files carry no variation because **the copy is the same across the three images**. One copy, three images, one main document plus its PROMPTS document, both in the batch folder.
 
 Confirm only the test code (`T###`) with the user the first time. The rest is derived.
 
@@ -125,14 +126,14 @@ Confirm only the test code (`T###`) with the user the first time. The rest is de
 Everything inside the test folder, inside the product:
 
 ```
-creatives/T### - DDMM [Long Form Ads]/
-├── AA BRAND-SKU T###-B1/            <- one folder per batch (angle x level)
-│   ├── AA BRAND-SKU T###-B1.docx     <- copy only
-│   ├── AA BRAND-SKU T###-B1-v1.png    <- the 3 image variations
-│   ├── AA BRAND-SKU T###-B1-v2.png
-│   └── AA BRAND-SKU T###-B1-v3.png
-├── AA BRAND-SKU T###-B2/ ... B15/    <- 5 angles x 3 levels = 15 batches, 15 folders
-├── infos/AA BRAND-SKU T###-B1 INFOS.docx <- angle, level and the prompts of the 3 images
+creatives/T###-TF - DDMM [Long Form Ads]/
+├── AA BRAND-SKU T###-TF-B1/                    <- one folder per batch (angle x level)
+│   ├── AA BRAND-SKU T###-TF-B1.docx             <- angle, level, profile, headline, description, CTA, copy
+│   ├── AA BRAND-SKU T###-TF-B1 - PROMPTS.docx   <- the prompts of the 3 images
+│   ├── AA BRAND-SKU T###-TF-B1-V1.png           <- the 3 image variations
+│   ├── AA BRAND-SKU T###-TF-B1-V2.png
+│   └── AA BRAND-SKU T###-TF-B1-V3.png
+├── AA BRAND-SKU T###-TF-B2/ ... B15/           <- 5 angles x 3 levels = 15 batches, 15 folders
 ├── matrix.md
 ├── image-brief.md
 ├── gate-report.md
@@ -142,7 +143,7 @@ creatives/T### - DDMM [Long Form Ads]/
 └── tracking/batches.json
 ```
 
-**One folder per batch:** every batch (angle x level combination) has its own folder holding exactly 4 files, the copy docx and the 3 images. The scripts already write there. A round of 5 angles x 3 levels makes 15 batches and 15 folders, B1 to B15.
+**One folder per batch:** every batch (angle x level combination) has its own folder holding exactly 5 files: the main docx, the PROMPTS docx and the 3 images. The scripts already write there. A round of 5 angles x 3 levels makes 15 batches and 15 folders, B1 to B15.
 
 Never leave an image in a temp folder and never leave a source `.md` loose in the root. This follows the house output naming convention (the short-form ads skill, section 7).
 

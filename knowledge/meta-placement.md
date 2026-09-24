@@ -74,9 +74,16 @@ For a quiz destination, the description explains the quiz. For a PDP, it carries
 
 ## 5. CTA button
 
-When the round goes to a quiz, the button is **Learn More**, because that is what Meta offers for a quiz destination.
+**Fixed rule by funnel stage:**
 
-> Careful with how you read LOCK 8: it says a **direct-purchase CTA beats learn more (0.412 against 0.191)**. That number compares *different funnels*, not buttons. When the destination is a quiz by test design, the button is Learn More and **the CTA compression happens inside the copy**, which has to push to the quiz with a direct verb, never with a lukewarm invitation.
+| Funnel stage | Name suffix | Button |
+|---|---|---|
+| Top of funnel | `TF` | **Learn more** |
+| Bottom of funnel | `FF` | **Shop now** |
+
+The script sets the button from `--funnel`, not from the draft. In a sweep of 959 competitor ads in the vertical, Buy now never appears (Shop now 935, See details 12, Learn more 11), and the highest-volume competitor uses Learn more in 66 of 88 ads, with a quiz destination. A cold round that goes to a quiz is top of funnel: Learn more.
+
+> Careful with how you read LOCK 8: it says a **direct-purchase CTA beats learn more (0.412 against 0.191)**. That number compares *different funnels*, not buttons. When the destination is a quiz by test design, the button is Learn more and **the CTA compression happens inside the copy**, which has to push to the quiz with a direct verb, never with a lukewarm invitation.
 
 ---
 

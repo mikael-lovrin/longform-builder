@@ -3,27 +3,35 @@
 build_batch_docx.py — Phase 6.
 
 Batch = angle x awareness level, numbered B1..B15 in a 5x3 round
-(B1 = angle 1 level A, B2 = angle 1 level B, B4 = angle 2 level A). Images: B1-v1, B1-v2, B1-v3.
+(B1 = angle 1 level A, B2 = angle 1 level B, B4 = angle 2 level A). Images: B1-V1, B1-V2, B1-V3.
 
-(1) Builds two .docx per batch, in the house document standard:
-    Arial 12pt, 1.5 line spacing, black, headings in ALL CAPS and bold.
-      AA BRAND-SKU T###-B1/AA BRAND-SKU T###-B1.docx   only the copy (primary text +
-                                                      first 3 lines), in the batch folder
-                                                      next to the 3 images
-      infos/AA BRAND-SKU T###-B1 INFOS.docx   angle, awareness level and the 3 image prompts
-(2) Builds the round upload sheet (upload.csv), one row per ad, already carrying
-    the classification columns that creative-intel will read afterwards.
-    Headline, description and CTA live only in this sheet, never in a docx.
+Naming carries the funnel stage: {AUTHOR} {BRAND-SKU} {TEST}-{FUNNEL}-B{n}-V{k}
+  e.g. AA BRAND-SKU T101-TF-B1-V1   (TF = top of funnel, FF = bottom of funnel). Always hyphens.
 
-The INFOS prompts are read from image-brief.md, so the document carries the real
-prompt that generated each image.
+(1) Builds two .docx per batch, in the house document standard (Arial 12pt, 1.5 line
+    spacing, black), both in the batch folder next to the 3 images:
+      AA BRAND-SKU T101-TF-B1/AA BRAND-SKU T101-TF-B1.docx
+          main document, each field with the label in bold and the content on the line
+          below: ANGLE (name + one-line summary), AWARENESS LEVEL (label + one-line
+          summary), PROFILE, HEADLINE, DESCRIPTION, CTA, COPY
+      AA BRAND-SKU T101-TF-B1/AA BRAND-SKU T101-TF-B1 - PROMPTS.docx
+          the real prompt of each image, read from image-brief.md
+(2) Builds the round upload sheet (upload.csv), one row per ad, with the profile
+    column and the classification columns that creative-intel reads afterwards.
+
+Frontmatter fields read from the draft:
+    angle, angle_num, level               (as before)
+    angle_summary                         the angle in one sentence
+    level_summary                         optional; defaults to the level's standard line
+    profile                               the Meta page that runs the batch
+CTA by funnel stage: TF = Learn more, FF = Shop now (--funnel decides, not the draft).
 Awareness levels (default): A Problem aware, B Solution aware, C Hidden cause.
 
 Usage:
-    python build_batch_docx.py --draft drafts/B1.md   (writes to AA BRAND-SKU T101-B1/)
-    python build_batch_docx.py --folder drafts/ --test T101 --product BRAND-SKU   # all of them
-    python build_batch_docx.py --sheet --folder drafts/ --test T101 --product BRAND-SKU \
-           --destination "https://..." --campaign "T101 Long Form" --out upload.csv
+    python build_batch_docx.py --draft drafts/B1.md   (writes to AA BRAND-SKU T101-TF-B1/)
+    python build_batch_docx.py --folder drafts/ --test T101 --product BRAND-SKU --funnel TF
+    python build_batch_docx.py --sheet --folder drafts/ --test T101 --product BRAND-SKU --funnel TF \
+           --destination "https://..." --out upload.csv
 """
 import argparse, csv, re, sys
 from pathlib import Path
@@ -37,7 +45,9 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 BLACK = RGBColor(0, 0, 0)
-ETHNICITY = {"1": "White American", "2": "Black", "3": "Latino"}
+# fallback only: the label of each variation comes from the image brief, because the
+# image variable (ethnicity, age band, composition) changes from round to round
+ETHNICITY = {"1": "variation 1", "2": "variation 2", "3": "variation 3"}
 DEFAULT_AUTHOR = "AA"
 
 # ------------------------------------------------------------------ parsing
@@ -67,6 +77,13 @@ def section(body, *titles):
 
 # ------------------------------------------------------------------ image brief
 LEVELS = {"A": "Problem aware", "B": "Solution aware", "C": "Hidden cause"}
+LEVEL_SUMMARY = {
+    "A": "Opens on the scene, the mechanism arrives late.",
+    "B": "Opens on what he already tried, the mechanism explains why it failed.",
+    "C": "Opens on the mechanism reveal, the pain comes after.",
+}
+FUNNELS = {"TF": "Top of funnel", "FF": "Bottom of funnel"}
+CTA_BY_FUNNEL = {"TF": "Learn more", "FF": "Shop now"}
 
 def read_brief(cell, path="image-brief.md"):
     """Locked scene of the cell + the label of each variation (from its #### header)."""
@@ -86,7 +103,7 @@ def read_brief(cell, path="image-brief.md"):
         scene = ms.group(1).strip()
     labels = {}
     # '.' does not match newlines without DOTALL, so this only takes the header line
-    pat_lab = r"^####.*?\b" + re.escape(cell) + r"-v(\d)\b(.*)$"
+    pat_lab = r"^####.*?\b" + re.escape(cell) + r"-[vV](\d)\b(.*)$"
     for ml in re.finditer(pat_lab, block, re.M):
         labels[ml.group(1)] = ml.group(2).strip().lstrip("-" + chr(8212) + chr(8211) + " ").strip()
     return {"scene": scene, "labels": labels}
@@ -98,16 +115,20 @@ def read_prompts(cell, path="image-brief.md"):
         return {}
     txt = p.read_text(encoding="utf-8")
     out = {}
-    pat = r"^####[^\n]*\b" + re.escape(cell) + r"-v(\d)\b[^\n]*\n(.*?)(?=^#{3,4}\s|\Z)"
+    pat = r"^####[^\n]*\b" + re.escape(cell) + r"-[vV](\d)\b[^\n]*\n(.*?)(?=^#{3,4}\s|\Z)"
     for m in re.finditer(pat, txt, re.M | re.S):
         pm = re.search(r"\*\*Prompt:?\*\*\s*\n(.*)", m.group(2), re.S)
         out[m.group(1)] = (pm.group(1) if pm else m.group(2)).strip()
     return out
 
-def cell_path(author, product, test, cell):
-    """Each batch has its own folder holding the copy docx and the 3 images:
-    AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1.docx (batch = angle x level, B1..B15)"""
-    name = "%s %s %s-%s" % (author, product, test, cell)
+def base_name(author, product, test, funnel, cell):
+    """AA BRAND-SKU T101-TF-B1: author, product, test, funnel stage and batch, always hyphens."""
+    return "%s %s %s-%s-%s" % (author, product, test, funnel, cell)
+
+def cell_path(author, product, test, cell, funnel="TF"):
+    """Each batch has its own folder holding the two docx and the 3 images:
+    AA BRAND-SKU T101-TF-B1/AA BRAND-SKU T101-TF-B1.docx (batch = angle x level, B1..B15)"""
+    name = base_name(author, product, test, funnel, cell)
     Path(name).mkdir(exist_ok=True)
     return str(Path(name) / (name + ".docx"))
 
@@ -162,67 +183,69 @@ def body_text(doc, text, justify=True):
         p.paragraph_format.space_after = Pt(10)
         _run(p.add_run(block.strip()), 12, bold=False)
 
-def lead_text(doc, lead, text):
-    """Paragraph with a bold lead followed by regular text."""
-    p = doc.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
-    p.paragraph_format.line_spacing = 1.5
-    p.paragraph_format.space_after = Pt(10)
-    _run(p.add_run(lead), 12, bold=True)
-    _run(p.add_run(text), 12, bold=False)
-    return p
+def field(doc, label, text, justify=True):
+    """Label in bold on one line, content on the line below."""
+    heading(doc, label)
+    body_text(doc, text, justify=justify)
 
-def build_docx(md_path, out_path, brief="image-brief.md", infos_dir="infos"):
+def hyphens(text):
+    """Separators are always hyphens, never a middle dot."""
+    return text.replace(" · ", " - ")
+
+def clean(text):
+    return "\n".join(l for l in text.splitlines() if l.strip() != "---").strip()
+
+def angle_label(fm):
+    n, name = fm.get("angle_num", ""), fm.get("angle", "")
+    return ("Angle %s - %s" % (n, name)) if n else name
+
+def build_docx(md_path, out_path, brief="image-brief.md", funnel="TF"):
     fm, body = parse_front(Path(md_path).read_text(encoding="utf-8"))
-    doc_id = fm.get("id") or Path(out_path).stem
-
     primary = section(body, "PRIMARY TEXT")
-    first3 = section(body, "FIRST 3 LINES (what shows before see more)",
-                     "FIRST 3 LINES")
-    angle_txt = section(body, "ANGLE")
     base = Path(out_path).stem
     # batch = angle x level, numbered B1..B15; the level comes from the frontmatter
     mcell = re.search(r"-(B\d+)$", base)
     cell = mcell.group(1) if mcell else ""
     level = str(fm.get("level", ""))
+    cta = CTA_BY_FUNNEL[funnel]
+    cta_md = section(body, "CTA")
+    if cta_md and cta_md.lower() != cta.lower():
+        print("  warning %s: draft says CTA '%s', funnel %s requires '%s'" % (cell, cta_md, funnel, cta))
+    for k in ("profile", "angle_summary"):
+        if not fm.get(k):
+            print("  warning %s: frontmatter has no '%s'" % (cell, k))
 
-    # document 1: literally only the copy. It is the file that goes to whoever
-    # uploads the ad, so no title, angle, avatars, headline, description or CTA.
+    # main document: everything whoever uploads the ad needs, except the prompts
     doc = new_doc()
-    body_text(doc, primary)
-    if first3:
-        heading(doc, "first three lines (%d characters)" % len(first3))
-        body_text(doc, first3)
+    heading(doc, base, center=True)
+    field(doc, "Angle", "\n".join(x for x in (angle_label(fm), fm.get("angle_summary", "")) if x))
+    field(doc, "Awareness level",
+          "\n".join((LEVELS.get(level, level), fm.get("level_summary") or LEVEL_SUMMARY.get(level, ""))))
+    field(doc, "Profile", fm.get("profile") or "PENDING")
+    field(doc, "Headline", section(body, "LINK HEADLINE"))
+    field(doc, "Description", section(body, "LINK DESCRIPTION"))
+    field(doc, "CTA", cta)
+    field(doc, "Copy", primary)
     doc.save(out_path)
 
-    # document 2: batch infos, with the real prompt of each image
-    b = read_brief(cell, brief) if cell else None
+    # prompts document, separate, in the same folder: {standard name} - PROMPTS.docx
     prompts = read_prompts(cell, brief) if cell else {}
-    labels = (b or {}).get("labels", {})
-    info = new_doc()
-    heading(info, doc_id, center=True)
-    heading(info, "angle")
-    if fm.get("angle"):
-        lead_text(info, "%s." % fm["angle"], "")
-    body_text(info, angle_txt)
-    heading(info, "awareness level")
-    body_text(info, "%s (%s)" % (LEVELS.get(level, level), level))
-    heading(info, "image prompts")
-    if b and b.get("scene"):
-        lead_text(info, "Locked scene. ", b["scene"])
+    labels = (read_brief(cell, brief) or {}).get("labels", {})
+    pr = new_doc()
+    heading(pr, base + " - PROMPTS", center=True)
     for k in ("1", "2", "3"):
-        lead_text(info, "Image v%s, %s. " % (k, labels.get(k) or ETHNICITY[k]),
-                  "File %s-v%s.png" % (base, k))
-        body_text(info, prompts.get(k, ""), justify=False)
-    # INFOS lives outside the cell folder, which only holds the copy docx and the 3 images
-    folder = Path(infos_dir)
-    folder.mkdir(exist_ok=True)
-    info.save(folder / ("%s INFOS.docx" % base))
+        cab = pr.add_paragraph()
+        cab.paragraph_format.space_before = Pt(14)
+        cab.paragraph_format.space_after = Pt(6)
+        _run(cab.add_run("V%s - %s-V%s.png" % (k, base, k)), 12, bold=True)
+        body_text(pr, hyphens(labels.get(k) or ETHNICITY[k]), justify=False)
+        body_text(pr, clean(prompts.get(k, "")), justify=False)
+    pr.save(Path(out_path).parent / (base + " - PROMPTS.docx"))
     return out_path, len(primary)
 
 # ------------------------------------------------------------------ sheet
-def build_sheet(folder, test, product, destination, campaign, out, author=DEFAULT_AUTHOR):
+def build_sheet(folder, test, product, destination, campaign, out, author=DEFAULT_AUTHOR,
+                funnel="TF", brief="image-brief.md"):
     rows = []
     for md in sorted(Path(folder).glob("*.md"), key=batch_order):
         fm, body = parse_front(md.read_text(encoding="utf-8"))
@@ -230,18 +253,19 @@ def build_sheet(folder, test, product, destination, campaign, out, author=DEFAUL
         if not m:
             continue
         b, level = m.group(1), str(fm.get("level", ""))
-        base = "%s %s %s-B%s" % (author, product, test, b)
-        labels = (read_brief("B%s" % b) or {}).get("labels", {})
+        base = base_name(author, product, test, funnel, "B%s" % b)
+        labels = (read_brief("B%s" % b, brief) or {}).get("labels", {})
         primary = section(body, "PRIMARY TEXT")
         head = section(body, "LINK HEADLINE")
         desc = section(body, "LINK DESCRIPTION")
-        cta = section(body, "CTA") or "Learn More"
+        cta = CTA_BY_FUNNEL[funnel]
         for v in ("1", "2", "3"):
             rows.append({
-                "campaign": campaign or "%s Long Form" % test,
-                "ad_set": "%s-B%s" % (test, b),
-                "ad": "%s-v%s" % (base, v),
-                "image": "%s-v%s.png" % (base, v),
+                "campaign": campaign or "%s Long Form %s" % (test, funnel),
+                "ad_set": "%s-%s-B%s" % (test, funnel, b),
+                "profile": fm.get("profile", ""),
+                "ad": "%s-V%s" % (base, v),
+                "image": "%s-V%s.png" % (base, v),
                 "primary_text": primary,
                 "headline": head,
                 "description": desc,
@@ -250,7 +274,7 @@ def build_sheet(folder, test, product, destination, campaign, out, author=DEFAUL
                 "angle": fm.get("angle", ""),
                 "angle_num": fm.get("angle_num", ""),
                 "level": "%s (%s)" % (LEVELS.get(level, level), level),
-                "variation": "v%s" % v,
+                "variation": "V%s" % v,
                 "cluster": labels.get(v) or ETHNICITY[v],
                 "chars": len(primary),
             })
@@ -269,24 +293,26 @@ def main():
     ap.add_argument("--out"); ap.add_argument("--sheet", action="store_true")
     ap.add_argument("--test", default="T101"); ap.add_argument("--product", default="BRAND-SKU")
     ap.add_argument("--author", default=DEFAULT_AUTHOR)
+    ap.add_argument("--funnel", default="TF", choices=sorted(FUNNELS),
+                    help="TF top of funnel (CTA Learn more), FF bottom of funnel (CTA Shop now)")
     ap.add_argument("--brief", default="image-brief.md")
     ap.add_argument("--destination", default=""); ap.add_argument("--campaign", default="")
     a = ap.parse_args()
 
     if a.sheet:
         build_sheet(a.folder or "drafts", a.test, a.product, a.destination,
-                    a.campaign, a.out or "upload.csv", a.author)
+                    a.campaign, a.out or "upload.csv", a.author, a.funnel, a.brief)
         return
     if a.draft:
-        out = a.out or cell_path(a.author, a.product, a.test, Path(a.draft).stem)
-        out, n = build_docx(a.draft, out, a.brief)
+        out = a.out or cell_path(a.author, a.product, a.test, Path(a.draft).stem, a.funnel)
+        out, n = build_docx(a.draft, out, a.brief, a.funnel)
         print("built: %s  (%d chars of copy)" % (out, n)); return
     if a.folder:
         for md in sorted(Path(a.folder).glob("*.md"), key=batch_order):
             if not re.match(r"B\d+$", md.stem):
                 continue
-            out = cell_path(a.author, a.product, a.test, md.stem)
-            _, n = build_docx(md, out, a.brief)
+            out = cell_path(a.author, a.product, a.test, md.stem, a.funnel)
+            _, n = build_docx(md, out, a.brief, a.funnel)
             print("built: %s  (%d chars)" % (out, n))
         return
     ap.error("pass --draft, --folder or --sheet")
