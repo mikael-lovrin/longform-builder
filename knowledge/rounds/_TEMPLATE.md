@@ -49,7 +49,7 @@ Batch = angle x level (see `../method-batches.md`). Numbering for this round:
 | Angle 4 — <name> | B10 | B11 | B12 |
 | Angle 5 — <name> | B13 | B14 | B15 |
 
-Drafts `drafts/B1.md` to `drafts/B15.md`, folders `AA BRAND-SKU T###-B1/` to `-B15/`, images `AA BRAND-SKU T###-B{n}-1.png` to `-3.png`.
+Drafts `drafts/B1.md` to `drafts/B15.md`, folders `AA BRAND-SKU T###-B1/` to `-B15/`, images `AA BRAND-SKU T###-B{n}-v1.png` to `-3.png`.
 
 ### Angle {n} — <angle name> (<who it is aimed at>)
 - **Reference hook:** <one line, an anchor and not final text>

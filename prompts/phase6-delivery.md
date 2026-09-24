@@ -8,7 +8,7 @@ One pair per batch (angle x level, B1 to B15), **not per image** — the copy is
 
 ```
 AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1.docx   <- copy only, in the batch folder next to the 3 images
-AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1-1.png  <- and -2.png, -3.png
+AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1-v1.png  <- and -v2.png, -v3.png
 infos/AA BRAND-SKU T101-B1 INFOS.docx            <- angle, level and the prompts of the 3 images
 ```
 
@@ -49,8 +49,8 @@ In this order:
 |---|---|
 | `campaign` | name of the test campaign |
 | `ad_set` | one per batch (the ad set is what receives the $100): `T101-B1` |
-| `ad` | `AA BRAND-SKU T101-B1-1` |
-| `image` | filename: `AA BRAND-SKU T101-B1-1.png` |
+| `ad` | `AA BRAND-SKU T101-B1-v1` |
+| `image` | filename: `AA BRAND-SKU T101-B1-v1.png` |
 | `primary_text` | the long-form copy |
 | `headline` | link headline |
 | `description` | link description |

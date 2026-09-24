@@ -100,7 +100,7 @@ And there is a sixth piece, which is not part of the ad but decides whether it w
 ```
 Folder : {AUTHOR} {BRAND-SKU} T###-B{batch}/
 Docx   : {AUTHOR} {BRAND-SKU} T###-B{batch}.docx
-Image  : {AUTHOR} {BRAND-SKU} T###-B{batch}-{variation}.png
+Image  : {AUTHOR} {BRAND-SKU} T###-B{batch}-v{variation}.png
 INFOS  : infos/{AUTHOR} {BRAND-SKU} T###-B{batch} INFOS.docx
 ```
 
@@ -108,11 +108,11 @@ INFOS  : infos/{AUTHOR} {BRAND-SKU} T###-B{batch} INFOS.docx
 - `{BRAND-SKU}` — brand and product code, e.g. `BRAND-SKU`
 - `T###` — the test
 - `B{batch}` — the batch, which is the **angle x awareness level combination**, numbered sequentially. In a 5-angle x 3-level round there are **15 batches, B1 to B15**: B1 = Angle 1 level A, B2 = Angle 1 level B, B3 = Angle 1 level C, B4 = Angle 2 level A, ... B15 = Angle 5 level C. Formula: `batch = (angle - 1) x 3 + level index + 1` (A=0, B=1, C=2)
-- `{variation}` — 1, 2 or 3 (avatar cluster of the image), **always after a hyphen**: `T101-B1-1`. Without the hyphen `B11` would be ambiguous (batch 11, or batch 1 variation 1)
+- `{variation}` — 1, 2 or 3 (avatar cluster of the image), **always after a hyphen**: `T101-B1-v1`. Without the hyphen `B11` would be ambiguous (batch 11, or batch 1 variation 1)
 
 Angles are called **Angle 1 to Angle 5**, never B1 to B5. The level stays a letter (A = Problem aware, B = Solution aware, C = Hidden cause) and lives in the draft frontmatter (`level:`), next to `angle_num:`. It is not part of the filename.
 
-Full example: `AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1.docx` and the images `AA BRAND-SKU T101-B1-1.png`, `-2.png`, `-3.png`. In the upload sheet, `ad_set` = `T101-B1` and `ad` = `AA BRAND-SKU T101-B1-1`.
+Full example: `AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1.docx` and the images `AA BRAND-SKU T101-B1-v1.png`, `-v2.png`, `-v3.png`. In the upload sheet, `ad_set` = `T101-B1` and `ad` = `AA BRAND-SKU T101-B1-v1`.
 
 The `.docx` carries no variation because **the copy is the same across the three images**. One copy, three images, one copy document (plus its INFOS document in `infos/`).
 
@@ -128,9 +128,9 @@ Everything inside the test folder, inside the product:
 creatives/T### - DDMM [Long Form Ads]/
 ├── AA BRAND-SKU T###-B1/            <- one folder per batch (angle x level)
 │   ├── AA BRAND-SKU T###-B1.docx     <- copy only
-│   ├── AA BRAND-SKU T###-B1-1.png    <- the 3 image variations
-│   ├── AA BRAND-SKU T###-B1-2.png
-│   └── AA BRAND-SKU T###-B1-3.png
+│   ├── AA BRAND-SKU T###-B1-v1.png    <- the 3 image variations
+│   ├── AA BRAND-SKU T###-B1-v2.png
+│   └── AA BRAND-SKU T###-B1-v3.png
 ├── AA BRAND-SKU T###-B2/ ... B15/    <- 5 angles x 3 levels = 15 batches, 15 folders
 ├── infos/AA BRAND-SKU T###-B1 INFOS.docx <- angle, level and the prompts of the 3 images
 ├── matrix.md

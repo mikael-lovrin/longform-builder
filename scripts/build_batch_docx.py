@@ -3,7 +3,7 @@
 build_batch_docx.py — Phase 6.
 
 Batch = angle x awareness level, numbered B1..B15 in a 5x3 round
-(B1 = angle 1 level A, B2 = angle 1 level B, B4 = angle 2 level A). Images: B1-1, B1-2, B1-3.
+(B1 = angle 1 level A, B2 = angle 1 level B, B4 = angle 2 level A). Images: B1-v1, B1-v2, B1-v3.
 
 (1) Builds two .docx per batch, in the house document standard:
     Arial 12pt, 1.5 line spacing, black, headings in ALL CAPS and bold.
@@ -86,7 +86,7 @@ def read_brief(cell, path="image-brief.md"):
         scene = ms.group(1).strip()
     labels = {}
     # '.' does not match newlines without DOTALL, so this only takes the header line
-    pat_lab = r"^####.*?\b" + re.escape(cell) + r"-(\d)\b(.*)$"
+    pat_lab = r"^####.*?\b" + re.escape(cell) + r"-v(\d)\b(.*)$"
     for ml in re.finditer(pat_lab, block, re.M):
         labels[ml.group(1)] = ml.group(2).strip().lstrip("-" + chr(8212) + chr(8211) + " ").strip()
     return {"scene": scene, "labels": labels}
@@ -98,7 +98,7 @@ def read_prompts(cell, path="image-brief.md"):
         return {}
     txt = p.read_text(encoding="utf-8")
     out = {}
-    pat = r"^####[^\n]*\b" + re.escape(cell) + r"-(\d)\b[^\n]*\n(.*?)(?=^#{3,4}\s|\Z)"
+    pat = r"^####[^\n]*\b" + re.escape(cell) + r"-v(\d)\b[^\n]*\n(.*?)(?=^#{3,4}\s|\Z)"
     for m in re.finditer(pat, txt, re.M | re.S):
         pm = re.search(r"\*\*Prompt:?\*\*\s*\n(.*)", m.group(2), re.S)
         out[m.group(1)] = (pm.group(1) if pm else m.group(2)).strip()
@@ -212,8 +212,8 @@ def build_docx(md_path, out_path, brief="image-brief.md", infos_dir="infos"):
     if b and b.get("scene"):
         lead_text(info, "Locked scene. ", b["scene"])
     for k in ("1", "2", "3"):
-        lead_text(info, "Image %s, %s. " % (k, labels.get(k) or ETHNICITY[k]),
-                  "File %s-%s.png" % (base, k))
+        lead_text(info, "Image v%s, %s. " % (k, labels.get(k) or ETHNICITY[k]),
+                  "File %s-v%s.png" % (base, k))
         body_text(info, prompts.get(k, ""), justify=False)
     # INFOS lives outside the cell folder, which only holds the copy docx and the 3 images
     folder = Path(infos_dir)
@@ -240,8 +240,8 @@ def build_sheet(folder, test, product, destination, campaign, out, author=DEFAUL
             rows.append({
                 "campaign": campaign or "%s Long Form" % test,
                 "ad_set": "%s-B%s" % (test, b),
-                "ad": "%s-%s" % (base, v),
-                "image": "%s-%s.png" % (base, v),
+                "ad": "%s-v%s" % (base, v),
+                "image": "%s-v%s.png" % (base, v),
                 "primary_text": primary,
                 "headline": head,
                 "description": desc,
@@ -250,7 +250,7 @@ def build_sheet(folder, test, product, destination, campaign, out, author=DEFAUL
                 "angle": fm.get("angle", ""),
                 "angle_num": fm.get("angle_num", ""),
                 "level": "%s (%s)" % (LEVELS.get(level, level), level),
-                "variation": v,
+                "variation": "v%s" % v,
                 "cluster": labels.get(v) or ETHNICITY[v],
                 "chars": len(primary),
             })

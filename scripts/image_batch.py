@@ -11,12 +11,12 @@ The Higgsfield MCP is not callable from inside Python, so the split is:
 Usage (from the test folder):
   python image_batch.py plan --brief image-brief.md --test T101 --product BRAND-SKU
   python image_batch.py next
-  python image_batch.py record --id B1-1 --url "https://..."
+  python image_batch.py record --id B1-v1 --url "https://..."
   python image_batch.py verify
 
 Batch = angle x awareness level, numbered B1..B15 in a 5x3 round
 (B1 = angle 1 level A, B2 = angle 1 level B, B4 = angle 2 level A).
-The image variation comes after a hyphen: B1-1, B1-2, B1-3.
+The image variation comes after a hyphen: B1-v1, B1-v2, B1-v3.
 """
 import argparse, json, re, sys, urllib.request
 from pathlib import Path
@@ -41,20 +41,20 @@ def save(d):
 def cmd_plan(a):
     txt = Path(a.brief).read_text(encoding="utf-8")
     jobs = []
-    # blocks '#### B1-1 - label' followed by '**Prompt:**' and the prompt up to the next ####/###.
-    # Batch = angle x level (B1..B15); the -1/-2/-3 suffix is the image variation.
-    for m in re.finditer(r"^####\s*(B\d{1,2}-\d)\b([^\n]*)\n(.*?)(?=^#{3,4}\s|\Z)",
+    # blocks '#### B1-v1 - label' followed by '**Prompt:**' and the prompt up to the next ####/###.
+    # Batch = angle x level (B1..B15); the -v1/-v2/-v3 suffix is the image variation.
+    for m in re.finditer(r"^####\s*(B\d{1,2}-v\d)\b([^\n]*)\n(.*?)(?=^#{3,4}\s|\Z)",
                          txt, re.M | re.S):
         cid, label, block = m.group(1), m.group(2), m.group(3)
         label = label.strip().lstrip("-" + chr(8212) + chr(8211) + " ").strip()
         pm = re.search(r"\*\*Prompt:?\*\*\s*\n(.*)", block, re.S)
         prompt = (pm.group(1) if pm else block).strip()
         prompt = re.sub(r"\n{3,}", "\n\n", prompt)
-        cell, var = cid.rsplit("-", 1)   # B1, 1
+        cell, var = cid.rsplit("-", 1)   # B1, v1
         jobs.append({
             "id": cid, "cell": cell, "variation": var,
-            "cluster": label or ETHNICITY.get(var, "?"),
-            # each batch has its own folder: 'AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1-1.png'
+            "cluster": label or ETHNICITY.get(var.lstrip("v"), "?"),
+            # each batch has its own folder: 'AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1-v1.png'
             "file": "%s %s %s-%s/%s %s %s-%s.png" % (a.author, a.product, a.test, cell,
                                                     a.author, a.product, a.test, cid),
             "prompt": prompt, "status": "pending", "url": None, "bytes": 0, "dim": None,
@@ -71,8 +71,8 @@ def cmd_plan(a):
             print("   %s  (%d chars)" % (j["id"], len(j["prompt"])))
         sys.exit(2)
     if not jobs:
-        print("No '#### B#-#' block found in %s." % a.brief)
-        print("Expected format: '#### B1-1 - woman 45-52 · white' followed by '**Prompt:**'.")
+        print("No '#### B#-v#' block found in %s." % a.brief)
+        print("Expected format: '#### B1-v1 - woman 45-52 · white' followed by '**Prompt:**'.")
         sys.exit(2)
     save({"test": a.test, "product": a.product,
           "model": "nano_banana_pro", "aspect_ratio": "1:1", "resolution": "2k",

@@ -55,20 +55,20 @@ Read `knowledge/casting-longform.md` before writing the prompts. It supersedes t
 **Passed Momentum+Virality:** yes
 **Locked scene:** woman alone, kitchen, 1:47 a.m., warm light off the stove, mug in both hands, looking out of frame.
 
-#### B1-1 — woman 45-52 · white
+#### B1-v1 — woman 45-52 · white
 **Prompt:**
 (full prompt, 12 items)
 
-#### B1-2 — woman 53-60 · Black
+#### B1-v2 — woman 53-60 · Black
 **Prompt:**
 (identical, changing only the subject description)
 
-#### B1-3 — couple 45-60 · Latino
+#### B1-v3 — couple 45-60 · Latino
 **Prompt:**
 (same)
 ```
 
-The batch header is `### B{batch} — {Angle} x {Level}` and each variation header is `#### B{batch}-{variation} — {label}`. The hyphen before the variation is mandatory (`B11-1`, never `B111`), and the scripts parse exactly this pattern. The batch must be at `###` and the variation at `####`: with `##` the last variation swallows the next batch.
+The batch header is `### B{batch} — {Angle} x {Level}` and each variation header is `#### B{batch}-{variation} — {label}`. The hyphen before the variation is mandatory (`B11-v1`, never `B111`), and the scripts parse exactly this pattern. The batch must be at `###` and the variation at `####`: with `##` the last variation swallows the next batch.
 
 ## Mandatory check on every prompt
 

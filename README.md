@@ -270,7 +270,7 @@ Orchestrates image generation. Because image-model calls happen through a tool i
 ```bash
 python scripts/image_batch.py plan --brief image-brief.md --test T101 --product BRAND-SKU
 python scripts/image_batch.py next          # prints the next prompt, ready to paste
-python scripts/image_batch.py record --id B1-1 --url "<result url>"
+python scripts/image_batch.py record --id B1-v1 --url "<result url>"
 python scripts/image_batch.py verify        # count, aspect ratio, file size, naming
 ```
 
@@ -305,9 +305,9 @@ Phase 0 will ask for what it cannot infer: test code, product, matrix shape, des
 05-Creatives/T### - DDMM [Long Form Ads]/
 ├── AA BRAND-SKU T###-B1/            ← one folder per batch (angle × level)
 │   ├── AA BRAND-SKU T###-B1.docx     ← copy only
-│   ├── AA BRAND-SKU T###-B1-1.png    ← the 3 image variations
-│   ├── AA BRAND-SKU T###-B1-2.png
-│   └── AA BRAND-SKU T###-B1-3.png
+│   ├── AA BRAND-SKU T###-B1-v1.png    ← the 3 image variations
+│   ├── AA BRAND-SKU T###-B1-v2.png
+│   └── AA BRAND-SKU T###-B1-v3.png
 ├── AA BRAND-SKU T###-B2/ ... B15/    ← 5 angles × 3 levels = 15 batches, 15 folders
 ├── infos/AA BRAND-SKU T###-B1 INFOS.docx ← angle, level, image prompts
 ├── matrix.md
@@ -319,7 +319,7 @@ Phase 0 will ask for what it cannot infer: test code, product, matrix shape, des
 └── tracking/batches.json
 ```
 
-Each batch folder holds exactly four files: the copy docx and the three images. A batch is one angle × level cell, numbered B1 to B15 in a 5 × 3 round (B1 = Angle 1 level A, B2 = Angle 1 level B, B4 = Angle 2 level A); the image variation follows a hyphen, `B1-1`, so that `B11` is never ambiguous.
+Each batch folder holds exactly four files: the copy docx and the three images. A batch is one angle × level cell, numbered B1 to B15 in a 5 × 3 round (B1 = Angle 1 level A, B2 = Angle 1 level B, B4 = Angle 2 level A); the image variation follows a hyphen, `B1-v1`, so that `B11` is never ambiguous.
 
 Every batch ships five fields or it does not ship: primary text, image, link headline, link description, CTA.
 
@@ -427,7 +427,7 @@ E uma segunda correção, igualmente contraintuitiva:
 | 5 | **Geração** | PNGs nomeados, na pasta de cada batch | 1:1 verificado, cena replicada |
 | 6 | **Entrega** | dois `.docx` por batch (copy + INFOS) + planilha | cinco campos de placement |
 
-Cada batch (a combinação ângulo × nível) tem pasta própria com exatamente quatro arquivos: o `.docx` só com a copy (texto principal e as três primeiras linhas) e as três imagens. Num round de 5 ângulos × 3 níveis são 15 batches, numerados B1 a B15 (B1 = Ângulo 1 nível A, B2 = Ângulo 1 nível B, B4 = Ângulo 2 nível A), e 15 pastas: `AA BRAND-SKU T101-B1/` com `AA BRAND-SKU T101-B1.docx` e as imagens `AA BRAND-SKU T101-B1-1.png` a `-3.png`. O `.docx` INFOS de cada batch (ângulo, nível de consciência e o prompt completo de cada imagem) fica em `infos/`, na raiz do teste. Headline, descrição e CTA não entram em nenhum docx: vivem só na planilha de subida.
+Cada batch (a combinação ângulo × nível) tem pasta própria com exatamente quatro arquivos: o `.docx` só com a copy (texto principal e as três primeiras linhas) e as três imagens. Num round de 5 ângulos × 3 níveis são 15 batches, numerados B1 a B15 (B1 = Ângulo 1 nível A, B2 = Ângulo 1 nível B, B4 = Ângulo 2 nível A), e 15 pastas: `AA BRAND-SKU T101-B1/` com `AA BRAND-SKU T101-B1.docx` e as imagens `AA BRAND-SKU T101-B1-v1.png` a `-3.png`. O `.docx` INFOS de cada batch (ângulo, nível de consciência e o prompt completo de cada imagem) fica em `infos/`, na raiz do teste. Headline, descrição e CTA não entram em nenhum docx: vivem só na planilha de subida.
 
 ### A fase 3 não é opcional
 

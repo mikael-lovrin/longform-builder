@@ -20,7 +20,7 @@ Formula: `batch = (angle - 1) x 3 + level index + 1`, with A=0, B=1, C=2.
 | Angle 4 | B10 | B11 | B12 |
 | Angle 5 | B13 | B14 | B15 |
 
-Image variations come after a hyphen: `B1-1`, `B1-2`, `B1-3`. The hyphen is not optional, because without it `B11` would be ambiguous. Full names: folder `AA BRAND-SKU T101-B1/`, docx `AA BRAND-SKU T101-B1.docx`, images `AA BRAND-SKU T101-B1-1.png`. The level (A/B/C) and the angle number live in the draft frontmatter (`level:`, `angle_num:`), not in the name.
+Image variations come after a hyphen: `B1-v1`, `B1-v2`, `B1-v3`. The hyphen is not optional, because without it `B11` would be ambiguous. Full names: folder `AA BRAND-SKU T101-B1/`, docx `AA BRAND-SKU T101-B1.docx`, images `AA BRAND-SKU T101-B1-v1.png`. The level (A/B/C) and the angle number live in the draft frontmatter (`level:`, `angle_num:`), not in the name.
 
 - The copy is the **same** across the K variations. Only the image changes.
 - In long form static, **the hook is the image**. Its job is to stop the scroll and earn the tap on see more. The copy carries the angle.
