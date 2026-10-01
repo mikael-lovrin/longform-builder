@@ -75,6 +75,18 @@ python "$HOME/.claude/skills/longform-builder/scripts/build_batch_docx.py" \
     --sheet --test T101 --product BRAND-SKU --funnel TF --destination "https://..." --out upload.csv
 ```
 
+## Naming review (mandatory, before delivery)
+
+After building the docx files and `upload.csv`, run the reviewer on the test folder:
+
+```bash
+python scripts/review_names.py "<test folder>"
+```
+
+It reads the folder and file names and reports what it understood (test, funnel stage TF/FF, format BLF/BS/BV, author, batches, variations), with the angle, level, profile, headline, opening line and CTA of each batch, cross-checking the main docx, the PROMPTS docx, the draft, `tracking/batches.json` and `upload.csv`.
+
+**Report the result back in the chat as tables** (round summary, one row per batch, then the issues with a one-line fix for each) **and ask the user to confirm** test, funnel stage, format and author before calling the round delivered: those four can only be read from the name, so the script cannot know whether the name matches the intent. With any `ERROR` the round does not go up: fix it and run again until it is clean. Never rename without the user's go-ahead, and when renaming, update `upload.csv`, `tracking/batches.json` and the draft `id` too. Pointing it at the creatives folder reviews every round at once.
+
 ## Final logging
 
 1. Update `tracking/batches.json`: everything to `delivered`

@@ -97,6 +97,8 @@ And there is a sixth piece, which is not part of the ad but decides whether it w
 
 ## Naming — fixed standard
 
+> **Format in the batch id.** The batch id can carry the creative format: `BLF{n}` = long form, `BS{n}` = static (image), `BV{n}` = video. E.g. `AA BRAND-SKU T102-TF-BLF3-V1.png`, `AA BRAND-SKU T103-FF-BS2-V3.png`. Drafts: `drafts/BLF3.md`; brief: `### BLF3 - ...` / `#### BLF3-V1 - ...`; ids in `batches.json` likewise. The scripts accept `B`, `BLF`, `BS` and `BV` (plain `B{n}` keeps working for legacy rounds). A round without the awareness-level axis numbers BLF1..BLF5, one per angle.
+
 ```
 Folder  : {AUTHOR} {BRAND-SKU} T###-{FUNNEL}-B{batch}/
 Docx    : {AUTHOR} {BRAND-SKU} T###-{FUNNEL}-B{batch}.docx
@@ -118,6 +120,8 @@ Full example: `AA BRAND-SKU T101-TF-B1/AA BRAND-SKU T101-TF-B1.docx`, `AA BRAND-
 The `.docx` files carry no variation because **the copy is the same across the three images**. One copy, three images, one main document plus its PROMPTS document, both in the batch folder.
 
 Confirm only the test code (`T###`) with the user the first time. The rest is derived.
+
+**Naming review before delivery:** `scripts/review_names.py "<test folder>"` reports back what it read from every name (test, funnel stage, format, author, batch, variations, angle, profile, headline, CTA) and cross-checks it against the docx, the drafts, `batches.json` and `upload.csv`. Mandatory at the end of Phase 6; details in `prompts/phase6-delivery.md`.
 
 ---
 

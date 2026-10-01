@@ -88,3 +88,9 @@ The batch header is `### B{batch} — {Angle} x {Level}` and each variation head
 ## Approve before generating
 
 Present the brief with the hook concept next to each scene and wait for written approval. Phase 5 costs money, and 45 wrong images cost 45 times.
+
+## Idea + 2-3 executions, the user picks
+
+For every image of the batch: write the idea (what the angle says, what the scene shows, why it stops the scroll) and generate **2 to 3 genuinely different executions** (different scene, family or POV, never a cosmetic variant of the same scene). Present them as a contact sheet and let the user choose before applying a caption and building the docx.
+
+**A caption on the image is a second hook**, complementary to the first 3 lines of the copy (the copy opens on the pain or the scene, the caption delivers a result or a contradiction). Never repeat the copy's opening: those 3 lines sit right above the image in the feed.

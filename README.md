@@ -271,7 +271,14 @@ Orchestrates image generation. Because image-model calls happen through a tool i
 python scripts/image_batch.py plan --brief image-brief.md --test T101 --product BRAND-SKU
 python scripts/image_batch.py next          # prints the next prompt, ready to paste
 python scripts/image_batch.py record --id B1-V1 --url "<result url>"
-python scripts/image_batch.py verify        # count, aspect ratio, file size, naming
+python scripts/image_batch.py verify        # count, aspect ratio, file size, naming, framed images
+```
+
+### `review_names.py`
+Naming review before upload. Reads a test folder (or the whole creatives folder), prints what it understood from every name (test, funnel stage, format BLF/BS/BV, author, batches, variations, plus angle, profile, headline and CTA from each main docx) and cross-checks folders, docx, drafts, `tracking/batches.json` and `upload.csv`. Exit code 1 on any error.
+
+```bash
+python scripts/review_names.py "creatives/T102-TF - 2809 [Long Form Static]"
 ```
 
 ---

@@ -88,8 +88,9 @@ def check(path, product, ranges=None):
 
     bid = fm.get("id") or path.stem
     # batch = angle x level (B1..B15); the length band is per batch id in batches.json
-    batch = re.search(r"B(\d+)", path.stem)
-    batch = "B%s" % batch.group(1) if batch else None
+    # batch id: B1 (legacy) or BLF1 / BS1 / BV1 (format in the name: long form, static, video)
+    batch = re.search(r"B(?:LF|S|V)?\d+", path.stem)
+    batch = batch.group(0) if batch else None
     n = len(primary)
     flat = strip_accents(primary.lower())
 
@@ -192,7 +193,7 @@ def main():
     a = ap.parse_args()
 
     def batch_order(p):
-        m = re.match(r"B(\d+)$", p.stem)
+        m = re.match(r"B(?:LF|S|V)?(\d+)$", p.stem)
         return (0, int(m.group(1))) if m else (1, p.stem)
     files = sorted(Path(a.folder).glob("*.md"), key=batch_order)
     if not files:

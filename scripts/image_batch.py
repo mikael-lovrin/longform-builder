@@ -11,12 +11,13 @@ The Higgsfield MCP is not callable from inside Python, so the split is:
 Usage (from the test folder):
   python image_batch.py plan --brief image-brief.md --test T101 --product BRAND-SKU
   python image_batch.py next
-  python image_batch.py record --id B1-v1 --url "https://..."
+  python image_batch.py record --id B1-V1 --url "https://..."
   python image_batch.py verify
 
 Batch = angle x awareness level, numbered B1..B15 in a 5x3 round
 (B1 = angle 1 level A, B2 = angle 1 level B, B4 = angle 2 level A).
-The image variation comes after a hyphen: B1-v1, B1-v2, B1-v3.
+The image variation comes after a hyphen, capital V: B1-V1, B1-V2, B1-V3.
+The batch id can carry the format: BLF{n} long form, BS{n} static, BV{n} video.
 """
 import argparse, json, re, sys, urllib.request
 from pathlib import Path
@@ -25,7 +26,8 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 JOBS = Path("tracking/image-jobs.json")
 UA = {"User-Agent": "Mozilla/5.0"}
-ETHNICITY = {"1": "white american", "2": "black", "3": "latino"}
+# The label of each variation comes from the brief header, never from a fixed map:
+# the variation axis changes per round (ethnicity, age band, composition).
 DEFAULT_AUTHOR = "AA"
 
 def load():
@@ -41,20 +43,21 @@ def save(d):
 def cmd_plan(a):
     txt = Path(a.brief).read_text(encoding="utf-8")
     jobs = []
-    # blocks '#### B1-v1 - label' followed by '**Prompt:**' and the prompt up to the next ####/###.
-    # Batch = angle x level (B1..B15); the -v1/-v2/-v3 suffix is the image variation.
-    for m in re.finditer(r"^####\s*(B\d{1,2}-v\d)\b([^\n]*)\n(.*?)(?=^#{3,4}\s|\Z)",
+    # blocks '#### B1-V1 - label' followed by '**Prompt:**' and the prompt up to the next ####/###.
+    # Batch = angle x level (B1..B15, or BLF/BS/BV); the -V1/-V2/-V3 suffix is the image variation.
+    for m in re.finditer(r"^####\s*(B(?:LF|S|V)?\d{1,2}-[vV]\d)\b([^\n]*)\n(.*?)(?=^#{3,4}\s|\Z)",
                          txt, re.M | re.S):
         cid, label, block = m.group(1), m.group(2), m.group(3)
-        label = label.strip().lstrip("-" + chr(8212) + chr(8211) + " ").strip()
+        label = label.strip().lstrip("-" + chr(8212) + chr(8211) + " ").strip() or "?"
         pm = re.search(r"\*\*Prompt:?\*\*\s*\n(.*)", block, re.S)
         prompt = (pm.group(1) if pm else block).strip()
         prompt = re.sub(r"\n{3,}", "\n\n", prompt)
-        cell, var = cid.rsplit("-", 1)   # B1, v1
+        cid = cid[:-2] + cid[-2:].upper()   # legacy B1-v1 becomes B1-V1
+        cell, var = cid.rsplit("-", 1)   # B1, V1
         jobs.append({
             "id": cid, "cell": cell, "variation": var,
-            "cluster": label or ETHNICITY.get(var.lstrip("v"), "?"),
-            # each batch has its own folder: 'AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1-v1.png'
+            "cluster": label,
+            # each batch has its own folder: 'AA BRAND-SKU T101-B1/AA BRAND-SKU T101-B1-V1.png'
             "file": "%s %s %s-%s/%s %s %s-%s.png" % (a.author, a.product, a.test, cell,
                                                     a.author, a.product, a.test, cid),
             "prompt": prompt, "status": "pending", "url": None, "bytes": 0, "dim": None,
@@ -71,13 +74,13 @@ def cmd_plan(a):
             print("   %s  (%d chars)" % (j["id"], len(j["prompt"])))
         sys.exit(2)
     if not jobs:
-        print("No '#### B#-v#' block found in %s." % a.brief)
-        print("Expected format: '#### B1-v1 - woman 45-52 · white' followed by '**Prompt:**'.")
+        print("No '#### B#-V#' block found in %s." % a.brief)
+        print("Expected format: '#### B1-V1 - woman 45-52 · white' followed by '**Prompt:**'.")
         sys.exit(2)
     save({"test": a.test, "product": a.product,
           "model": "nano_banana_pro", "aspect_ratio": "1:1", "resolution": "2k",
           "jobs": jobs})
-    cells = sorted({j["cell"] for j in jobs}, key=lambda c: int(c[1:]))
+    cells = sorted({j["cell"] for j in jobs}, key=lambda c: int(re.sub(r"\D", "", c)))
     print("queue built: %d images across %d batches -> %s" % (len(jobs), len(cells), JOBS))
     print("batches: %s" % ", ".join(cells))
     short = [c for c in cells if sum(1 for j in jobs if j["cell"] == c) != 3]
@@ -106,7 +109,7 @@ def cmd_next(a):
 # ------------------------------------------------------------------ record
 def cmd_record(a):
     d = load()
-    j = next((x for x in d["jobs"] if x["id"] == a.id), None)
+    j = next((x for x in d["jobs"] if x["id"].upper() == a.id.upper()), None)
     if not j:
         print("id %s is not in the queue" % a.id); sys.exit(2)
     dest = Path(j["file"])
@@ -144,6 +147,25 @@ def cmd_verify(a):
     not_square = [j for j in jobs if j.get("dim") and j["dim"][0] != j["dim"][1]]
     small = [j for j in jobs if j["status"] == "done" and j["bytes"] < 200000]
 
+    # frame/letterbox: passes the 1:1 check and still fails at delivery.
+    # Detects a uniform dark border around a lighter center.
+    framed = []
+    try:
+        from PIL import Image
+        import numpy as np
+        for j in jobs:
+            if j["status"] != "done" or not Path(j["file"]).exists():
+                continue
+            arr = np.asarray(Image.open(j["file"]).convert("RGB").resize((256, 256)))
+            k = 8
+            border = np.concatenate([arr[:k].reshape(-1, 3), arr[-k:].reshape(-1, 3),
+                                     arr[:, :k].reshape(-1, 3), arr[:, -k:].reshape(-1, 3)])
+            center = arr[64:192, 64:192].reshape(-1, 3)
+            if border.mean() < 12 and center.mean() > 40:
+                framed.append(j["id"])
+    except ImportError:
+        framed = None
+
     print("=" * 76)
     print("VERIFY  %s  |  %d images planned" % (d.get("test"), len(jobs)))
     print("=" * 76)
@@ -152,6 +174,10 @@ def cmd_verify(a):
     print("file missing     : %d %s" % (len(missing), [j["id"] for j in missing] if missing else ""))
     print("not 1:1          : %d %s" % (len(not_square), [j["id"] for j in not_square] if not_square else ""))
     print("suspicious (<200KB): %d %s" % (len(small), [j["id"] for j in small] if small else ""))
+    if framed is None:
+        print("framed           : not checked (install pillow and numpy)")
+    else:
+        print("framed           : %d %s" % (len(framed), framed if framed else ""))
 
     # complete cells
     cells = {}
@@ -160,7 +186,7 @@ def cmd_verify(a):
     incomplete = [c for c, v in cells.items() if not all(v)]
     print("complete batches : %d/%d %s"
           % (len(cells) - len(incomplete), len(cells), incomplete if incomplete else ""))
-    ok = not (pending or missing or not_square or small)
+    ok = not (pending or missing or not_square or small or framed)
     print("\n%s" % ("BATCH OK" if ok else "BATCH INCOMPLETE, see above"))
     sys.exit(0 if ok else 1)
 

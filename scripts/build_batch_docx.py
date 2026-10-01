@@ -4,6 +4,8 @@ build_batch_docx.py — Phase 6.
 
 Batch = angle x awareness level, numbered B1..B15 in a 5x3 round
 (B1 = angle 1 level A, B2 = angle 1 level B, B4 = angle 2 level A). Images: B1-V1, B1-V2, B1-V3.
+The batch id can carry the format: BLF{n} long form, BS{n} static, BV{n} video
+(e.g. AA BRAND-SKU T102-TF-BLF3-V1). Plain B{n} still works for legacy rounds.
 
 Naming carries the funnel stage: {AUTHOR} {BRAND-SKU} {TEST}-{FUNNEL}-B{n}-V{k}
   e.g. AA BRAND-SKU T101-TF-B1-V1   (TF = top of funnel, FF = bottom of funnel). Always hyphens.
@@ -134,7 +136,7 @@ def cell_path(author, product, test, cell, funnel="TF"):
 
 def batch_order(p):
     """B2 before B10: sort by batch number, not alphabetically."""
-    m = re.match(r"B(\d+)$", Path(p).stem)
+    m = re.match(r"B(?:LF|S|V)?(\d+)$", Path(p).stem)
     return (0, int(m.group(1))) if m else (1, Path(p).stem)
 
 # ------------------------------------------------------------------ docx
@@ -204,7 +206,7 @@ def build_docx(md_path, out_path, brief="image-brief.md", funnel="TF"):
     primary = section(body, "PRIMARY TEXT")
     base = Path(out_path).stem
     # batch = angle x level, numbered B1..B15; the level comes from the frontmatter
-    mcell = re.search(r"-(B\d+)$", base)
+    mcell = re.search(r"-(B(?:LF|S|V)?\d+)$", base)
     cell = mcell.group(1) if mcell else ""
     level = str(fm.get("level", ""))
     cta = CTA_BY_FUNNEL[funnel]
@@ -249,12 +251,12 @@ def build_sheet(folder, test, product, destination, campaign, out, author=DEFAUL
     rows = []
     for md in sorted(Path(folder).glob("*.md"), key=batch_order):
         fm, body = parse_front(md.read_text(encoding="utf-8"))
-        m = re.match(r"B(\d+)$", md.stem)
+        m = re.match(r"B(?:LF|S|V)?(\d+)$", md.stem)
         if not m:
             continue
-        b, level = m.group(1), str(fm.get("level", ""))
-        base = base_name(author, product, test, funnel, "B%s" % b)
-        labels = (read_brief("B%s" % b, brief) or {}).get("labels", {})
+        cell, level = md.stem, str(fm.get("level", ""))
+        base = base_name(author, product, test, funnel, cell)
+        labels = (read_brief(cell, brief) or {}).get("labels", {})
         primary = section(body, "PRIMARY TEXT")
         head = section(body, "LINK HEADLINE")
         desc = section(body, "LINK DESCRIPTION")
@@ -262,7 +264,7 @@ def build_sheet(folder, test, product, destination, campaign, out, author=DEFAUL
         for v in ("1", "2", "3"):
             rows.append({
                 "campaign": campaign or "%s Long Form %s" % (test, funnel),
-                "ad_set": "%s-%s-B%s" % (test, funnel, b),
+                "ad_set": "%s-%s-%s" % (test, funnel, cell),
                 "profile": fm.get("profile", ""),
                 "ad": "%s-V%s" % (base, v),
                 "image": "%s-V%s.png" % (base, v),
@@ -309,7 +311,7 @@ def main():
         print("built: %s  (%d chars of copy)" % (out, n)); return
     if a.folder:
         for md in sorted(Path(a.folder).glob("*.md"), key=batch_order):
-            if not re.match(r"B\d+$", md.stem):
+            if not re.match(r"B(?:LF|S|V)?\d+$", md.stem):
                 continue
             out = cell_path(a.author, a.product, a.test, md.stem, a.funnel)
             _, n = build_docx(md, out, a.brief, a.funnel)
